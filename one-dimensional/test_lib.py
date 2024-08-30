@@ -42,3 +42,16 @@ class TestNumberLine:
         number_line.add_point(2)
 
         assert number_line.find_best_path() == 3
+
+    def test_display(self, capsys):
+
+        number_line = NumberLine()
+
+        number_line.add_point(0)
+        number_line.add_point(1)
+        number_line.add_point(2)
+
+        number_line.display()
+
+        captured = capsys.readouterr()
+        assert captured.out == "Number line segment: [0, 2]\nPoints on the line segment: [0, 1, 2]\nOptimal path from starting position 1 requires a traversal of 3 to contact all points.\n"
