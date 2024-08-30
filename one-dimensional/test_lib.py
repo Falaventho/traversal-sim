@@ -25,6 +25,15 @@ class TestNumberLine:
         with pytest.raises(ValueError):
             number_line.add_point(3)
 
+    def test_generate_random_points(self):
+        number_line = NumberLine(0, 2, 1)
+        random_points = number_line.generate_random_points(3)
+
+        assert len(random_points) == 3
+
+        for point in random_points:
+            assert 0 <= point <= 2
+
     def test_find_best_path(self):
 
         number_line = NumberLine(0, 2, 1)
