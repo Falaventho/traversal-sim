@@ -1,5 +1,5 @@
 import pytest
-from onedimoptlib import NumberLine
+from lib import NumberLine
 
 
 class TestNumberLine:
@@ -55,3 +55,14 @@ class TestNumberLine:
 
         captured = capsys.readouterr()
         assert captured.out == "Number line segment: [0, 2]\nPoints on the line segment: [0, 1, 2]\nOptimal path from starting position 1 requires a traversal of 3 to contact all points.\n"
+
+    def test_visualize(self):
+
+        number_line = NumberLine()
+
+        number_line.add_point(0.5)
+        number_line.add_point(1.5)
+
+        number_line.visualize()
+
+        assert True

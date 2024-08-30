@@ -1,5 +1,5 @@
 import random
-import matplotlib
+import matplotlib.pyplot as plt
 
 
 class NumberLine:
@@ -43,19 +43,29 @@ class NumberLine:
         print(f"Optimal path from starting position " +
               f"{self.starting_position} requires a traversal of {self.find_best_path()} to contact all points.")
 
-    # def visualize(self):
-    #     fig, ax = plt.subplots()
-    #     ax.plot([self.start, self.end], [0, 0],
-    #             'k-', lw=2)  # Draw the number line
+    def visualize(self):
+        fig, ax = plt.subplots()
 
-    #     # Plot points
-    #     for point in self.points:
-    #         ax.plot(point, 0, 'ro')  # Red circles for points
-    #         # Label points with their value
-    #         ax.text(point, 0.02, f'{point:.2f}', ha='center')
+        # Draw the number line
+        ax.plot([self.start, self.end], [0, 0], 'k-', lw=2)  # Solid black line
 
-    #     # Set limits and remove y-axis
-    #     ax.set_xlim(self.start - 0.1, self.end + 0.1)
-    #     ax.get_yaxis().set_visible(False)
+        # Mark the start_position
+        ax.plot(self.starting_position, 0, 'bo')
+        ax.text(self.starting_position, -0.02,
+                'Start', ha='center', fontsize=10)
 
-    #     plt.show()
+        # Plot each point
+        for point in self.points:
+            ax.plot(point, 0, 'ro')  # Red circle for each point
+            # Label the point with its value
+            ax.text(point, 0.02, f'{point:.2f}', ha='center', fontsize=10)
+
+        # Set the limits and remove y-axis for clarity
+        ax.set_xlim(self.start - 0.1, self.end + 0.1)
+        ax.get_yaxis().set_visible(False)
+
+        # Add labels and title
+        ax.set_xlabel('Number Line')
+        ax.set_title('Number Line with Points')
+
+        plt.show()
