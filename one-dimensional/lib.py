@@ -25,6 +25,17 @@ class NumberLine:
     def generate_random_points(self, n) -> list[float]:
         return [random.uniform(self.start, self.end) for _ in range(n)]
 
+    def generate_and_add_random_points(self, n):
+        points = self.generate_random_points(n)
+        for point in points:
+            self.add_point(point)
+
+    def find_max_point(self):
+        return max(self.points)
+
+    def find_min_point(self):
+        return min(self.points)
+
     def find_best_path(self) -> float:
         max_point = max(self.points)
         min_point = min(self.points)
@@ -70,3 +81,49 @@ class NumberLine:
         ax.set_title('Number Line with Points')
 
         plt.show()
+
+
+class Dataset():
+
+    def __init__(self, start=0, end=2, starting_position=1):
+        self.start = 0
+        self.end = 2
+        self.starting_position = starting_position
+        self.best_paths = []
+        self.min_points = []
+        self.max_points = []
+
+    def gather(self, number_of_points: int, iterations: int):
+        for i in range(iterations):
+            number_line = NumberLine()
+            number_line.generate_and_add_random_points(number_of_points)
+            self.best_paths.append(number_line.find_best_path())
+            self.min_points.append(number_line.find_min_point())
+            self.max_point.append(number_line.find_max_point())
+
+    def display(self):
+        print(f"Starting position: {self.starting_position}")
+        print(f"Number of points: {len(self.best_paths)}")
+        print(f"Average traversal: {self.get_mean_path()}")
+        print(f"Average max: {self.get_mean_max()}")
+        print(f"Average min: {self.get_mean_min()}")
+
+    def visualize(self):
+
+        visualization_line = NumberLine(
+            self.start, self.end, self.starting_position)
+        avg_max = self.get_mean_max
+        avg_min = self.get_mean_min
+        visualization_line.add_point(avg_max)
+        visualization_line.add_point(avg_min)
+
+        visualization_line.visualize(label=True)
+
+    def get_mean_path(self):
+        return sum(self.best_paths) / len(self.best_paths)
+
+    def get_mean_max(self):
+        return sum(self.max_points) / len(self.max_points)
+
+    def get_mean_min(self):
+        return sum(self.min_points) / len(self.min_points)
