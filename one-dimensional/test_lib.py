@@ -1,5 +1,6 @@
 import pytest
 from lib import NumberLine
+from time import sleep
 
 
 class TestNumberLine:
@@ -64,5 +65,25 @@ class TestNumberLine:
         number_line.add_point(1.5)
 
         number_line.visualize()
+
+        # required for cleanup, stops interference with other visualizing tests
+        sleep(1)
+
+        assert True
+
+    def test_visualize_random(self):
+
+        number_line = NumberLine()
+
+        random_points = number_line.generate_random_points(10)
+
+        for point in random_points:
+            number_line.add_point(point)
+
+        assert len(number_line.points) == 10
+
+        number_line.visualize()
+        # required for cleanup, stops interference with other visualizing tests
+        sleep(1)
 
         assert True
