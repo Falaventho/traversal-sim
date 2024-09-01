@@ -43,7 +43,7 @@ class NumberLine:
         print(f"Optimal path from starting position " +
               f"{self.starting_position} requires a traversal of {self.find_best_path()} to contact all points.")
 
-    def visualize(self):
+    def visualize(self, label=False):
         fig, ax = plt.subplots()
 
         # Draw the number line
@@ -58,7 +58,8 @@ class NumberLine:
         for point in self.points:
             ax.plot(point, 0, 'ro')  # Red circle for each point
             # Label the point with its value
-            ax.text(point, 0.02, f'{point:.2f}', ha='center', fontsize=10)
+            if label:
+                ax.text(point, 0.02, f'{point:.2f}', ha='center', fontsize=10)
 
         # Set the limits and remove y-axis for clarity
         ax.set_xlim(self.start - 0.1, self.end + 0.1)
