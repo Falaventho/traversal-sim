@@ -1,5 +1,6 @@
 import random
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 
 class NumberLine:
@@ -85,7 +86,7 @@ class NumberLine:
 
 class Dataset():
 
-    def __init__(self, start=0, end=2, starting_position=1):
+    def __init__(self, start=0, end=2, starting_position=1, number_of_points, iterations):
         self.start = 0
         self.end = 2
         self.starting_position = starting_position
@@ -95,7 +96,8 @@ class Dataset():
 
     def gather(self, number_of_points: int, iterations: int):
         for i in range(iterations):
-            number_line = NumberLine()
+            number_line = NumberLine(
+                self.start, self.end, self.starting_position)
             number_line.generate_and_add_random_points(number_of_points)
             self.best_paths.append(number_line.find_best_path())
             self.min_points.append(number_line.find_min_point())
@@ -127,3 +129,12 @@ class Dataset():
 
     def get_mean_min(self):
         return sum(self.min_points) / len(self.min_points)
+
+    def dump_to_file():
+
+        with open(f"dataset-{self.start}-{self.end}-{self.start_position}-{self.number_of_points}-{self.iterations}-{datetime.now()}") as f:
+            f.write(f"Starting position: {self.starting_position}")
+            f.write(f"Number of points: {len(self.best_paths)}")
+            f.write(f"Average traversal: {self.get_mean_path()}")
+            f.write(f"Average max: {self.get_mean_max()}")
+            f.write(f"Average min: {self.get_mean_min()}")
