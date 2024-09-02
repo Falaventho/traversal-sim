@@ -138,3 +138,22 @@ class Dataset():
             f.write(f"Average traversal: {self.get_mean_path()}")
             f.write(f"Average max: {self.get_mean_max()}")
             f.write(f"Average min: {self.get_mean_min()}")
+
+    def get_mean_stats(self) -> object:
+        data = {
+            avg_path: -1,
+            avg_min: -1,
+            avg_max: -1,
+            meta: {
+                starting_position: self.starting_position
+                number_of_points = self.number_of_points
+                start: self.start
+                end: self.end
+            }
+        }
+
+        avg_path = self.get_mean_path
+        avg_min = self.get_mean_min
+        avg_max = self.get_mean_max
+
+        return data
