@@ -84,24 +84,26 @@ class NumberLine:
         plt.show()
 
 
-class Dataset():
+class Dataset:
 
-    def __init__(self, start=0, end=2, starting_position=1, number_of_points, iterations):
+    def __init__(self, start=0, end=2, starting_position=1, number_of_points=1, iterations=1):
         self.start = 0
         self.end = 2
         self.starting_position = starting_position
         self.best_paths = []
         self.min_points = []
         self.max_points = []
+        self.number_of_points = number_of_points
+        self.iterations = iterations
 
-    def gather(self, number_of_points: int, iterations: int):
-        for i in range(iterations):
+    def gather(self):
+        for i in range(self.iterations):
             number_line = NumberLine(
                 self.start, self.end, self.starting_position)
-            number_line.generate_and_add_random_points(number_of_points)
+            number_line.generate_and_add_random_points(self.number_of_points)
             self.best_paths.append(number_line.find_best_path())
             self.min_points.append(number_line.find_min_point())
-            self.max_point.append(number_line.find_max_point())
+            self.max_points.append(number_line.find_max_point())
 
     def display(self):
         print(f"Starting position: {self.starting_position}")
@@ -138,22 +140,3 @@ class Dataset():
             f.write(f"Average traversal: {self.get_mean_path()}")
             f.write(f"Average max: {self.get_mean_max()}")
             f.write(f"Average min: {self.get_mean_min()}")
-
-    def get_mean_stats(self) -> object:
-        data = {
-            avg_path: -1,
-            avg_min: -1,
-            avg_max: -1,
-            meta: {
-                starting_position: self.starting_position
-                number_of_points = self.number_of_points
-                start: self.start
-                end: self.end
-            }
-        }
-
-        avg_path = self.get_mean_path
-        avg_min = self.get_mean_min
-        avg_max = self.get_mean_max
-
-        return data

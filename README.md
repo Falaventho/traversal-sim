@@ -8,7 +8,7 @@ There is a square 2d plane on which n randomly located points will be placed. Be
 
 ## The Plan
 
-Define the problem in 1d space, solve the 1d problem, then apply the solution to the 3d space and test for a true or near-true solution.
+Define the problem in 1d space, solve the 1d problem, then apply the solution to the 2d space and test for a true or near-true solution.
 
 ## The One-Dimensional Problem
 
