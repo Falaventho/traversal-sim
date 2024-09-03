@@ -40,13 +40,13 @@ A cursory examination of n&nbsp;=&nbsp;100 held true the limit hypothesis with a
 
 Below, the distance D from center for optimal traversal distance for n points on a line segment spanning 0 to 2 inclusive where 1<=n<=10:
 
-n = 1, D = 0.000
-n = 2, D = 0.000
-n = 3, D = 0.515
-n = 4, D = 0.660
-n = 5, D = 0.727
-n = 6, D = 0.776
-n = 7, D = 0.800
-n = 8, D = 0.827
-n = 9, D = 0.847
+n = 1, D = 0.000<br>
+n = 2, D = 0.000<br>
+n = 3, D = 0.515<br>
+n = 4, D = 0.660<br>
+n = 5, D = 0.727<br>
+n = 6, D = 0.776<br>
+n = 7, D = 0.800<br>
+n = 8, D = 0.827<br>
+n = 9, D = 0.847<br>
 n = 10, D = 0.863
