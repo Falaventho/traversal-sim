@@ -54,13 +54,13 @@ def bundle_stats(dataset: Dataset) -> object:
 
 
 def find_best_starting_position_and_traversal(superset: list[object]) -> dict:
-    best_val = superset[0]["avg_path"]
-    best_position = superset[0]["starting_position"]
+    best_val = superset[0]['avg_path']
+    best_position = superset[0]['starting_position']
 
     for stats in superset:
-        if stats["avg_path"] < best_val:
-            best_val = stats["avg_path"]
-            best_position = stats["starting_position"]
+        if stats['avg_path'] < best_val:
+            best_val = stats['avg_path']
+            best_position = stats['starting_position']
 
     return {
         "best_val": best_val,
@@ -71,20 +71,20 @@ def find_best_starting_position_and_traversal(superset: list[object]) -> dict:
 def print_superset(superset: list[object]):
     for idx, stats in enumerate(superset):
         print(f"Dataset {idx+1}")
-        print(f"For P={stats["starting_position"]}" +
-              f", n={stats["number_of_points"]}. {stats["iterations"]} iterations.")
-        print(f"Average traversal length: {stats["avg_path"]}")
-        print(f"Average minimum: {stats["avg_min"]}")
-        print(f"Average maximum: {stats["avg_max"]}\n")
+        print(f"For P={stats['starting_position']}" +
+              f", n={stats['number_of_points']}. {stats['iterations']} iterations.")
+        print(f"Average traversal length: {stats['avg_path']}")
+        print(f"Average minimum: {stats['avg_min']}")
+        print(f"Average maximum: {stats['avg_max']}\n")
 
 
 def print_best(superset: list[object]):
-    start = superset[0]["start"]
-    end = superset[0]["end"]
+    start = superset[0]['start']
+    end = superset[0]['end']
     best_data = find_best_starting_position_and_traversal(superset)
-    number_of_points = superset[0]["number_of_points"]
-    best_starting_position = best_data["best_position"]
-    best_traversal_length = best_data["best_val"]
+    number_of_points = superset[0]['number_of_points']
+    best_starting_position = best_data['best_position']
+    best_traversal_length = best_data['best_val']
 
     print(f"Best starting position for n={number_of_points} in range ({start},{end}) is found at " +
           f"P={best_starting_position} with average traversal of {best_traversal_length}.")
