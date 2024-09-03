@@ -35,3 +35,17 @@ Below is the same graph with log<sub>10</sub>(x-1) in orange and log<sub>e</sub>
 
 
 A cursory examination of n&nbsp;=&nbsp;100 held true the limit hypothesis with a 100,000 iteration-per-step test on a 0.001 width interval step showing P&nbsp;=&nbsp;1.985 on a segment spanning 0 to 2. From this, a 0.985 distance-from-center value can be extracted.
+
+
+Below, the distance D from center for optimal traversal distance for n points on a line segment spanning 0 to 2 inclusive where 1<=n<=10:
+
+n = 1, D = 0.000
+n = 2, D = 0.000
+n = 3, D = 0.515
+n = 4, D = 0.660
+n = 5, D = 0.727
+n = 6, D = 0.776
+n = 7, D = 0.800
+n = 8, D = 0.827
+n = 9, D = 0.847
+n = 10, D = 0.863
