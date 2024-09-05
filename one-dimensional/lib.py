@@ -245,7 +245,7 @@ class UserInterface:
 
     def plot_distances_from_center(self, distances_from_center: list[float]):
         plt.figure(figsize=(10, 6))
-        plt.plot(distances_from_center, marker='o', linestyle='', color='b')
+        plt.plot(distances_from_center, marker='o', color='b')
         plt.title('Optimal Distance From Center Per Simulation')
         plt.xlabel('Simulation Number')
         plt.ylabel('Distance from center')
@@ -253,52 +253,54 @@ class UserInterface:
         plt.show()
 
     def __run_simulation_with_single_plot(self):
-        plt.figure(figsize=(10, 6))
-        optimal_p_superset, optimal_distance_from_center_superset = self.__run_simulation_across_n_values()
+        # Run simulations across n-values
+        optimal_distance_from_center_superset = self.__run_simulation_across_n_values()
 
-        plt.title('Optimal Distance From Center Across N Values')
-        plt.xlabel('n-value')
-        plt.ylabel('Distance from center')
-        plt.grid(True)
+        # Create a figure and axis
+        fig, ax = plt.subplots()
+
+        left_bound = self.n_left_bound.get()
+
+        # Loop through each subset and plot it
+        for i, subset in enumerate(optimal_distance_from_center_superset):
+            n_value = left_bound + i
+            x_values = [n_value] * len(subset)
+            ax.scatter(x_values, subset, label=f'n={n_value}')
+
+        # Customize the plot
+        ax.set_xlabel('n value')
+        ax.set_ylabel('Optimal distances from center')
+        ax.set_title('Optimal Distances from Center for Different n Values')
+        ax.legend()
+
+        # Show the plot
         plt.show()
 
     def __run_simulation_with_multiplot(self):
         pass
 
-    def __run_simulation_for_n(self, n_value) -> tuple[list[float], list[float]]:
+    def __run_simulation_for_n(self, n_value) -> list[float]:
 
-    def run_simulation(self):
-        """This method is called when the 'Run' button is clicked."""
-        n_value = self.n_var.get()
         sig_fig = self.sig_fig_var.get()
         iteration_count = self.iteration_var.get()
         repetitions_count = self.repetitions_var.get()
 
-        print(f"Running simulation with parameters:")
-        print(f"n-value: {n_value}")
-        print(f"Significant figures: {sig_fig}")
-        print(f"Iteration count: {iteration_count}")
-        print(f"Repetitions count: {repetitions_count}")
-
         simulation = Simulation(
             0, 2, n_value, iteration_count, repetitions_count, sig_fig)
         simulation.run()
-
         distances_from_center = [abs(x-1) for x in simulation.optimal_p_values]
+        return distances_from_center
 
-        return (simulation.optimal_p_values, distances_from_center)
-
-    def __run_simulation_across_n_values(self) -> tuple:
-        optimal_p_superset = []
+    def __run_simulation_across_n_values(self) -> list[list[float]]:
         optimal_distance_from_center_superset = []
         left_bound = self.n_left_bound.get()
-        right_bound = self.n_right_bound.get()
-        for i in range(left_bound, right_bound+1):
+        right_bound = self.n_right_bound.get() + 1
+        for i in range(left_bound, right_bound):
             n_value = i
-            optimal_p_vals, optimal_dist = self.__run_simulation_for_n(n_value)
-            optimal_p_superset.append(optimal_p_vals)
+            optimal_dist = self.__run_simulation_for_n(n_value)
             optimal_distance_from_center_superset.append(optimal_dist)
-        return (optimal_p_superset, optimal_distance_from_center_superset)
+
+        return optimal_distance_from_center_superset
 
     def quit_app(self):
         """This method quits the application."""
