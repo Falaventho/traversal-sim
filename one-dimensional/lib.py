@@ -229,6 +229,15 @@ class UserInterface:
         self.quit_button = ttk.Button(root, text="Quit", command=self.quit_app)
         self.quit_button.grid(row=4, column=2, padx=10, pady=10)
 
+    def plot_optimal_p_values(self, optimal_p_values: list[float]):
+        plt.figure(figsize=(10, 6))
+        plt.plot(optimal_p_values, marker='o', linestyle='-', color='b')
+        plt.title('Optimal P Values Over Repetitions')
+        plt.xlabel('Repetition')
+        plt.ylabel('Optimal P Value')
+        plt.grid(True)
+        plt.show()
+
     def run_simulation(self):
         """This method is called when the 'Run' button is clicked."""
         n_value = self.n_var.get()
@@ -241,6 +250,11 @@ class UserInterface:
         print(f"Significant figures: {sig_fig}")
         print(f"Iteration count: {iteration_count}")
         print(f"Repetitions count: {repetitions_count}")
+
+        simulation = Simulation(
+            0, 2, n_value, iteration_count, repetitions_count, sig_fig)
+        simulation.run()
+        self.plot_optimal_p_values(simulation.optimal_p_values)
 
     def quit_app(self):
         """This method quits the application."""
