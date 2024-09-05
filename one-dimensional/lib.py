@@ -178,56 +178,94 @@ class UserInterface:
         self.root.title("Simulation Control Panel")
 
         # Variables for storing slider values
-        self.n_var = tk.IntVar(value=1)
+        self.n_left_bound = tk.IntVar(value=1)
+        self.n_right_bound = tk.IntVar(value=1)
         self.sig_fig_var = tk.IntVar(value=3)
         self.iteration_var = tk.IntVar(value=1000)
         self.repetitions_var = tk.IntVar(value=3)
 
         # n-value controls
-        self.n_label = ttk.Label(root, text="n-value")
+        self.n_label = ttk.Label(root, text="n-values from:")
         self.n_label.grid(row=0, column=0, padx=10, pady=5)
-        self.n_entry = ttk.Entry(root, textvariable=self.n_var)
-        self.n_entry.grid(row=0, column=1, padx=10, pady=5)
-        self.n_slider = ttk.Scale(root, from_=1, to=1000, orient='horizontal',
-                                  variable=self.n_var, command=lambda val: self.n_var.set(int(float(val))))
-        self.n_slider.grid(row=0, column=2, padx=10, pady=5)
+
+        self.n_left_entry = ttk.Entry(root, textvariable=self.n_left_bound)
+        self.n_left_entry.grid(row=0, column=1, padx=10, pady=5)
+
+        self.n_to_label = ttk.Label(root, text="to")
+        self.n_to_label.grid(row=0, column=2, padx=10, pady=5)
+
+        self.n_right_entry = ttk.Entry(root, textvariable=self.n_right_bound)
+        self.n_right_entry.grid(row=0, column=3, padx=10, pady=5)
 
         # Sig Fig controls
         self.sig_fig_label = ttk.Label(root, text="Significant Figures")
-        self.sig_fig_label.grid(row=1, column=0, padx=10, pady=5)
+        self.sig_fig_label.grid(row=2, column=0, padx=10, pady=5)
         self.sig_fig_entry = ttk.Entry(root, textvariable=self.sig_fig_var)
-        self.sig_fig_entry.grid(row=1, column=1, padx=10, pady=5)
+        self.sig_fig_entry.grid(row=2, column=1, padx=10, pady=5)
         self.sig_fig_slider = ttk.Scale(root, from_=1, to=10, orient='horizontal',
                                         variable=self.sig_fig_var, command=lambda val: self.sig_fig_var.set(int(float(val))))
-        self.sig_fig_slider.grid(row=1, column=2, padx=10, pady=5)
+        self.sig_fig_slider.grid(row=2, column=2, padx=10, pady=5)
 
         # Iteration count controls
         self.iteration_label = ttk.Label(root, text="Iteration Count")
-        self.iteration_label.grid(row=2, column=0, padx=10, pady=5)
+        self.iteration_label.grid(row=3, column=0, padx=10, pady=5)
         self.iteration_entry = ttk.Entry(root, textvariable=self.iteration_var)
-        self.iteration_entry.grid(row=2, column=1, padx=10, pady=5)
+        self.iteration_entry.grid(row=3, column=1, padx=10, pady=5)
         self.iteration_slider = ttk.Scale(root, from_=1, to=1000000, orient='horizontal',
                                           variable=self.iteration_var, command=lambda val: self.iteration_var.set(int(float(val))))
-        self.iteration_slider.grid(row=2, column=2, padx=10, pady=5)
+        self.iteration_slider.grid(row=3, column=2, padx=10, pady=5)
 
         # Repetitions count controls
         self.repetitions_label = ttk.Label(root, text="Repetitions Count")
-        self.repetitions_label.grid(row=3, column=0, padx=10, pady=5)
+        self.repetitions_label.grid(row=4, column=0, padx=10, pady=5)
         self.repetitions_entry = ttk.Entry(
             root, textvariable=self.repetitions_var)
-        self.repetitions_entry.grid(row=3, column=1, padx=10, pady=5)
+        self.repetitions_entry.grid(row=4, column=1, padx=10, pady=5)
         self.repetitions_slider = ttk.Scale(root, from_=1, to=100, orient='horizontal',
                                             variable=self.repetitions_var, command=lambda val: self.repetitions_var.set(int(float(val))))
-        self.repetitions_slider.grid(row=3, column=2, padx=10, pady=5)
+        self.repetitions_slider.grid(row=4, column=2, padx=10, pady=5)
 
         # Run button
         self.run_button = ttk.Button(
-            root, text="Run", command=self.run_simulation)
-        self.run_button.grid(row=4, column=1, padx=10, pady=10)
+            root, text="Run", command=self.__run_simulation_with_single_plot)
+        self.run_button.grid(row=5, column=1, padx=10, pady=10)
 
         # Quit button
         self.quit_button = ttk.Button(root, text="Quit", command=self.quit_app)
-        self.quit_button.grid(row=4, column=2, padx=10, pady=10)
+        self.quit_button.grid(row=5, column=2, padx=10, pady=10)
+
+    def plot_optimal_p_values(self, optimal_p_values: list[float]):
+        plt.figure(figsize=(10, 6))
+        plt.plot(optimal_p_values, marker='o', linestyle='', color='b')
+        plt.title('Optimal P Values Over Repetitions')
+        plt.xlabel('Repetition')
+        plt.ylabel('Optimal P Value')
+        plt.grid(True)
+        plt.show()
+
+    def plot_distances_from_center(self, distances_from_center: list[float]):
+        plt.figure(figsize=(10, 6))
+        plt.plot(distances_from_center, marker='o', linestyle='', color='b')
+        plt.title('Optimal Distance From Center Per Simulation')
+        plt.xlabel('Simulation Number')
+        plt.ylabel('Distance from center')
+        plt.grid(True)
+        plt.show()
+
+    def __run_simulation_with_single_plot(self):
+        plt.figure(figsize=(10, 6))
+        optimal_p_superset, optimal_distance_from_center_superset = self.__run_simulation_across_n_values()
+
+        plt.title('Optimal Distance From Center Across N Values')
+        plt.xlabel('n-value')
+        plt.ylabel('Distance from center')
+        plt.grid(True)
+        plt.show()
+
+    def __run_simulation_with_multiplot(self):
+        pass
+
+    def __run_simulation_for_n(self, n_value) -> tuple[list[float], list[float]]:
 
     def run_simulation(self):
         """This method is called when the 'Run' button is clicked."""
@@ -241,6 +279,26 @@ class UserInterface:
         print(f"Significant figures: {sig_fig}")
         print(f"Iteration count: {iteration_count}")
         print(f"Repetitions count: {repetitions_count}")
+
+        simulation = Simulation(
+            0, 2, n_value, iteration_count, repetitions_count, sig_fig)
+        simulation.run()
+
+        distances_from_center = [abs(x-1) for x in simulation.optimal_p_values]
+
+        return (simulation.optimal_p_values, distances_from_center)
+
+    def __run_simulation_across_n_values(self) -> tuple:
+        optimal_p_superset = []
+        optimal_distance_from_center_superset = []
+        left_bound = self.n_left_bound.get()
+        right_bound = self.n_right_bound.get()
+        for i in range(left_bound, right_bound+1):
+            n_value = i
+            optimal_p_vals, optimal_dist = self.__run_simulation_for_n(n_value)
+            optimal_p_superset.append(optimal_p_vals)
+            optimal_distance_from_center_superset.append(optimal_dist)
+        return (optimal_p_superset, optimal_distance_from_center_superset)
 
     def quit_app(self):
         """This method quits the application."""
