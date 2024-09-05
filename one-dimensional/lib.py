@@ -137,12 +137,6 @@ class Simulation:
 
     def __funnel_to_p_value(self) -> float:
 
-        # step at decimal intervals from starting_position to end
-        # run gather_traversal i times against each step
-        # find the best traversal
-        # select left of best as new start
-        # select right of best as new end
-        # repeat until sig_fig depth reached
         left_bound = self.starting_position
         right_bound = self.end
         step = 1
