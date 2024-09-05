@@ -25,6 +25,22 @@ class NumberLine:
         self.min_point = self.__find_min_point()
         self.traversal_distance = self.__find_best_path()
 
+    def set_number_of_points(self, n: int):
+        self.number_of_points = n
+
+    def set_starting_position(self, p: float):
+        self.starting_position = p
+
+    def regenerate_data(self):
+        self.points.clear()
+        self.__generate_add_random_points(self.number_of_points)
+        self.__update_attributes()
+
+    def __update_attributes(self):
+        self.max_point = self.__find_max_point()
+        self.min_point = self.__find_min_point()
+        self.traversal_distance = self.__find_best_path()
+
     def __add_point(self, p):
         if self.start <= p <= self.end:
             self.points.append(p)
@@ -114,13 +130,14 @@ class Simulation:
         self.iterations = iterations
         self.repetitions = repetitions
         self.significant_figures = significant_figures
+        self.number_line = NumberLine(
+            start, end, self.starting_position, number_of_points)
 
     def __gather(self, p: float) -> float:
         dataset = []
         for i in range(self.iterations):
-            number_line = NumberLine(
-                self.start, self.end, p, self.number_of_points)
-            dataset.append(number_line.traversal_distance)
+            self.number_line.regenerate_data()
+            dataset.append(self.numberline.traversal_distance)
 
         return statistics.mean(dataset)
 
@@ -151,6 +168,7 @@ class Simulation:
             step = step / 10
             for j in range(start=left_bound, stop=right_bound, step=step):
 
+                self.number_line.set_starting_position(j)
                 traversal = self.__gather(j)
                 traversal_distances.append(traversal)
                 tested_p_values.append(j)
