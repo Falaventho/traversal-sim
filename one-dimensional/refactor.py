@@ -45,8 +45,8 @@ class NumberLine:
     def display(self):
         print(f"Number line segment: [{self.start}, {self.end}]")
         print(f"Points on the line segment: {sorted(self.points)}")
-        print(f"Optimal path from starting position {self.starting_position} requires a traversal of {
-              self.traversal_distance} to contact all points.")
+        print(f"Optimal path from starting position {self.starting_position} requires a traversal of" +
+              f"{self.traversal_distance} to contact all points.")
 
     def visualize(self, label=False):
         fig, ax = plt.subplots()
