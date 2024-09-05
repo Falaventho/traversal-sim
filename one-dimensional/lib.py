@@ -109,22 +109,10 @@ class NumberLine:
 
 class Simulation:
 
-    # def __init__(self, start=0, end=2, starting_position=1, number_of_points=1, iterations=1):
-    #     self.start = 0
-    #     self.end = 2
-    #     self.starting_position = starting_position
-    #     self.best_paths = []
-    #     self.min_points = []
-    #     self.max_points = []
-    #     self.number_of_points = number_of_points
-    #     self.iterations = iterations
-    #     self.__gather()
-
     def __init__(self, start=0, end=2, number_of_points=1, iterations=1, repetitions=1, significant_figures=1):
         self.start = 0
         self.end = 2
         self.starting_position = (self.end - self.start) / 2
-        # self.best_paths = []
         self.optimal_p_values = []
         self.number_of_points = number_of_points
         self.iterations = iterations
@@ -186,15 +174,6 @@ class Simulation:
         minimum_traversal = min(traversal_distances)
         idx = traversal_distances.index(minimum_traversal)
         return tested_p_values[idx]
-
-    # def get_mean_path(self):
-    #     return sum(self.best_paths) / len(self.best_paths)
-
-    # def get_mean_max(self):
-    #     return sum(self.max_points) / len(self.max_points)
-
-    # def get_mean_min(self):
-    #     return sum(self.min_points) / len(self.min_points)
 
 
 class UserInterface:
