@@ -122,11 +122,25 @@ class TestSimulation:
         start = 0
         end = 2
         number_of_points = 1
-        iterations = 10000
+        iterations = 100000
         repetitions = 1
         significant_figures = 1
 
         sim = Simulation(start, end, number_of_points,
                          iterations, repetitions, significant_figures)
         sim.run()
-        assert sim.optimal_p_values[0] <= 1.1
+        assert sim.optimal_p_values[0] == 1.0
+
+    def test_repetitions(self):
+        start = 0
+        end = 2
+        number_of_points = 1
+        iterations = 1
+        repetitions = 5
+        significant_figures = 1
+
+        sim = Simulation(start, end, number_of_points,
+                         iterations, repetitions, significant_figures)
+        sim.run()
+
+        assert len(sim.optimal_p_values) == repetitions
