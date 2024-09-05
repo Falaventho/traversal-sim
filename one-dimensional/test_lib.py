@@ -1,6 +1,6 @@
 import pytest
 
-from lib import NumberLine
+from lib import NumberLine, Simulation
 from time import sleep
 
 
@@ -99,3 +99,21 @@ class TestNumberLine:
         sleep(1)
 
         assert True
+
+
+class TestSimulation:
+
+    def test_create_simulation(self):
+
+        sim = Simulation(0, 2, 1, 1, 1, 1)
+
+        assert sim.start == 0
+        assert sim.end == 2
+        assert sim.number_of_points == sim.iterations == sim.repetitions == sim.significant_figures == 1
+        assert len(sim.optimal_p_values) == 0
+
+    def test_run_sim(self):
+
+        sim = Simulation(0, 2, 1, 1, 1, 1)
+        sim.run()
+        assert len(sim.optimal_p_values) == 1

@@ -33,7 +33,7 @@ class NumberLine:
 
     def regenerate_data(self):
         self.points.clear()
-        self.__generate_add_random_points(self.number_of_points)
+        self.__generate_and_add_random_points(self.number_of_points)
         self.__update_attributes()
 
     def __update_attributes(self):
@@ -125,11 +125,11 @@ class Simulation:
         dataset = []
         for i in range(self.iterations):
             self.number_line.regenerate_data()
-            dataset.append(self.numberline.traversal_distance)
+            dataset.append(self.number_line.traversal_distance)
 
         return statistics.mean(dataset)
 
-    def run_sim(self):
+    def run(self):
 
         for i in range(self.repetitions):
             p_val = self.__funnel_to_p_value()
@@ -149,17 +149,19 @@ class Simulation:
         traversal_distances = []
         tested_p_values = []
 
-        for i in range(significant_figures):
+        for i in range(self.significant_figures):
 
             traversal_distances.clear()
             tested_p_values.clear()
             step = step / 10
-            for j in range(start=left_bound, stop=right_bound, step=step):
+            j = left_bound
+            while j <= right_bound:
 
                 self.number_line.set_starting_position(j)
                 traversal = self.__gather(j)
                 traversal_distances.append(traversal)
                 tested_p_values.append(j)
+                j += step
 
             optimal_p_val = self.__find_optimal_p(
                 traversal_distances, tested_p_values)
@@ -169,7 +171,7 @@ class Simulation:
 
         return self.__find_optimal_p(traversal_distances, tested_p_values)
 
-    def __find_optimal_p(traversal_distances: list[float], tested_p_values: list[float]) -> float:
+    def __find_optimal_p(self, traversal_distances: list[float], tested_p_values: list[float]) -> float:
 
         minimum_traversal = min(traversal_distances)
         idx = traversal_distances.index(minimum_traversal)
