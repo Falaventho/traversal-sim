@@ -117,3 +117,16 @@ class TestSimulation:
         sim = Simulation(0, 2, 1, 1, 1, 1)
         sim.run()
         assert len(sim.optimal_p_values) == 1
+
+    def test_n_1(self):
+        start = 0
+        end = 2
+        number_of_points = 1
+        iterations = 10000
+        repetitions = 1
+        significant_figures = 1
+
+        sim = Simulation(start, end, number_of_points,
+                         iterations, repetitions, significant_figures)
+        sim.run()
+        assert sim.optimal_p_values[0] <= 1.1
