@@ -1,6 +1,7 @@
 import pytest
 from refactor import RandomPointGenerator, NumberLine
 import random
+from time import sleep
 
 
 class TestPointGenerator:
@@ -20,3 +21,13 @@ class TestNumberLine:
         captured = capsys.readouterr()
 
         assert captured.out[:20] == "Number line segment:"
+
+    def test_number_line_visualize(self):
+
+        n = random.randint(0, 100)
+        number_line = NumberLine(0, 2, 1, n)
+        number_line.visualize()
+
+        # required for cleanup, stops interference with other visualizing tests
+        sleep(1)
+        assert True
