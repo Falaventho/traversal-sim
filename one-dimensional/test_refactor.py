@@ -45,14 +45,17 @@ class TestNumberLine:
 
 class TestSimulation:
     def test_run(self):
-        r = random.randint(0, 100)
+        repetitions = random.randint(0, 100)
         number_line = NumberLine(0, 2, 1, 3)
-        simulation = Simulation(number_line, 1, r, 1)
+        simulation = Simulation(number_line, 1, repetitions, 1)
         simulation.run()
-        assert len(simulation.optimal_p_values) == r
+        assert len(simulation.optimal_p_values) == repetitions
 
     def test_gather(self):
-        pass
+        number_line = NumberLine(0, 2, 1, 3)
+        simulation = Simulation(number_line, 1, 1, 1)
+        traversal = simulation._Simulation__gather()
+        assert 0 <= traversal <= 3
 
     def test_funnel_to_p_value(self):
         pass
