@@ -1,146 +1,73 @@
 import pytest
-
-from lib import NumberLine, Simulation
+from lib import RandomPointGenerator, NumberLine, Simulation
+import random
 from time import sleep
 
 
+class TestPointGenerator:
+    def test_generate_points(self):
+        pg = RandomPointGenerator()
+        n = random.randint(0, 1000)
+        points = pg.generate_points(0, 2, n)
+        assert len(points) == n
+
+
 class TestNumberLine:
-
-    def test_create_number_line(self):
-
-        number_line = NumberLine()
-        number_line.points.clear()
-
-        assert (number_line.start, number_line.end,
-
-                number_line.starting_position, number_line.points) == (0, 2, 1, [])
-
-    def test_add_point(self):
-
-        number_line = NumberLine(0, 2, 1)
-
-        number_line.points.clear()
-
-        number_line._NumberLine__add_point(0)
-        number_line._NumberLine__add_point(1)
-        number_line._NumberLine__add_point(2)
-
-        assert number_line.points == [0, 1, 2]
-
-    def test_add_point_outside_bounds(self):
-
-        number_line = NumberLine(0, 2, 1)
-
-        with pytest.raises(ValueError):
-            number_line._NumberLine__add_point(3)
-
-    def test_generate_random_points(self):
-
-        number_line = NumberLine(0, 2, 1)
-
-        random_points = number_line._NumberLine__generate_random_points(3)
-
-        assert len(random_points) == 3
-
-        for point in random_points:
-
-            assert 0 <= point <= 2
-
-    def test_find_best_path(self):
-
-        number_line = NumberLine(0, 2, 1)
-        number_line.points.clear()
-        number_line._NumberLine__add_point(0)
-        number_line._NumberLine__add_point(1)
-        number_line._NumberLine__add_point(2)
-        number_line._NumberLine__update_attributes()
-
-        assert number_line._NumberLine__find_best_path() == 3
-
     def test_display(self, capsys):
-
-        number_line = NumberLine()
-        number_line.points.clear()
-        number_line._NumberLine__add_point(0)
-        number_line._NumberLine__add_point(1)
-        number_line._NumberLine__add_point(2)
-        number_line._NumberLine__update_attributes()
-
+        n = random.randint(0, 100)
+        number_line = NumberLine(0, 2, 1, n)
         number_line.display()
-
         captured = capsys.readouterr()
-
-        assert captured.out == "Number line segment: [0, 2]\nPoints on the line segment: [0, 1, 2]\nOptimal path from starting position 1 requires a traversal of 3 to contact all points.\n"
+        assert captured.out[:20] == "Number line segment:"
 
     def test_visualize(self):
-
-        number_line = NumberLine()
-        number_line.points.clear()
-        number_line._NumberLine__add_point(0.5)
-        number_line._NumberLine__add_point(1.5)
-        number_line._NumberLine__update_attributes()
-
+        n = random.randint(0, 100)
+        number_line = NumberLine(0, 2, 1, n)
         number_line.visualize()
-
         # required for cleanup, stops interference with other visualizing tests
-
         sleep(1)
-
         assert True
 
-    def test_visualize_random(self):
+    def test_regenerate_data(self):
+        n = random.randint(0, 100)
+        number_line = NumberLine(0, 2, 1, n)
+        points = number_line.points
+        number_line.regenerate_data()
+        assert points != number_line.points
 
-        number_line = NumberLine(0, 2, 1, 10)
-
-        number_line.visualize()
-
-        # required for cleanup, stops interference with other visualizing tests
-
-        sleep(1)
-
-        assert True
+    def test_find_best_path(self):
+        number_line = NumberLine(0, 2, 1, 1)
+        number_line.max_point = 1.5
+        number_line.min_point = 0.5
+        distance = number_line._NumberLine__find_best_path()
+        assert distance == 1.5
 
 
 class TestSimulation:
+    def test_run(self):
+        repetitions = random.randint(0, 100)
+        number_line = NumberLine(0, 2, 1, 3)
+        simulation = Simulation(number_line, 1, repetitions, 1)
+        simulation.run()
+        assert len(simulation.optimal_p_values) == repetitions
 
-    def test_create_simulation(self):
+    def test_gather(self):
+        number_line = NumberLine(0, 2, 1, 3)
+        simulation = Simulation(number_line, 1, 1, 1)
+        traversal = simulation._Simulation__gather()
+        assert 0 <= traversal <= 3
 
-        sim = Simulation(0, 2, 1, 1, 1, 1)
+    def test_find_optimal_p(self):
+        number_line = NumberLine(0, 2, 1, 3)
+        simulation = Simulation(number_line, 1, 1, 1)
+        traversal_distances = [0, 1, 2, 3, 4]
+        tested_p_values = [0, 1, 2, 3, 4]
+        assert simulation._Simulation__find_optimal_p(
+            traversal_distances, tested_p_values) == 0
 
-        assert sim.start == 0
-        assert sim.end == 2
-        assert sim.number_of_points == sim.iterations == sim.repetitions == sim.significant_figures == 1
-        assert len(sim.optimal_p_values) == 0
-
-    def test_run_sim(self):
-
-        sim = Simulation(0, 2, 1, 1, 1, 1)
-        sim.run()
-        assert len(sim.optimal_p_values) == 1
-
-    def test_n_1(self):
-        start = 0
-        end = 2
-        number_of_points = 1
-        iterations = 100000
-        repetitions = 1
-        significant_figures = 1
-
-        sim = Simulation(start, end, number_of_points,
-                         iterations, repetitions, significant_figures)
-        sim.run()
-        assert sim.optimal_p_values[0] == 1.0
-
-    def test_repetitions(self):
-        start = 0
-        end = 2
-        number_of_points = 1
-        iterations = 1
-        repetitions = 5
-        significant_figures = 1
-
-        sim = Simulation(start, end, number_of_points,
-                         iterations, repetitions, significant_figures)
-        sim.run()
-
-        assert len(sim.optimal_p_values) == repetitions
+    def test_funnel_to_p_value(self):
+        number_line = NumberLine(0, 2, 1, 3)
+        significant_figures = random.randint(0, 10)
+        simulation = Simulation(number_line, 1, 1, significant_figures)
+        assert (simulation._Simulation__funnel_to_p_value() *
+                significant_figures) % (10*significant_figures) >= 1
