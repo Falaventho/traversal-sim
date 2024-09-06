@@ -61,4 +61,9 @@ class TestSimulation:
         pass
 
     def test_find_optimal_p(self):
-        pass
+        number_line = NumberLine(0, 2, 1, 3)
+        simulation = Simulation(number_line, 1, 1, 1)
+        traversal_distances = [0, 1, 2, 3, 4]
+        tested_p_values = [0, 1, 2, 3, 4]
+        assert simulation._Simulation__find_optimal_p(
+            traversal_distances, tested_p_values) == 0
