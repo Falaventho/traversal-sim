@@ -150,6 +150,14 @@ class UserInterface:
             self.root, text="Quit", command=self.quit_app)
         self.quit_button.grid(row=5, column=2, padx=10, pady=10)
 
+        self.progress = ttk.Progressbar(
+            self.root, orient='horizontal', mode='determinate')
+        self.progress.grid(row=6, column=0, columnspan=3,
+                           padx=10, pady=10, sticky='ew')
+
+        self.progress_label = tk.Label(self.root, text='0%')
+        self.progress_label.grid(row=6, column=3, padx=10, pady=10, sticky='w')
+
     def __create_label_and_entry(self, text, variable, row, col, scale_to=None):
         label = ttk.Label(self.root, text=text)
         label.grid(row=row, column=col, padx=10, pady=5)
@@ -178,9 +186,17 @@ class UserInterface:
         optimal_distance_from_center_superset = []
         left_bound = self.n_left_bound.get()
         right_bound = self.n_right_bound.get() + 1
-        for n_value in range(left_bound, right_bound):
+        total_n_values = right_bound - left_bound
+        self.progress['maximum'] = total_n_values
+
+        for i, n_value in enumerate(range(left_bound, right_bound)):
             optimal_dist = self.__run_simulation_for_n(n_value)
             optimal_distance_from_center_superset.append(optimal_dist)
+            self.progress['value'] = i + 1
+            percentage = int((i+1) / total_n_values * 100)
+            self.progress_label.config(text=f"{percentage}%")
+            self.root.update_idletasks()
+
         return optimal_distance_from_center_superset
 
     def __run_simulation_for_n(self, n_value):
