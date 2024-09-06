@@ -78,7 +78,7 @@ class Simulation:
             p_val = self.__funnel_to_p_value()
             self.optimal_p_values.append(p_val)
 
-    def __gather(self, p):
+    def __gather(self):
         dataset = []
         for _ in range(self.iterations):
             self.number_line.regenerate_data()
@@ -86,32 +86,43 @@ class Simulation:
         return statistics.mean(dataset)
 
     def __funnel_to_p_value(self):
-        left_bound = self.number_line.starting_position
-        right_bound = self.number_line.end
+        left_bound = float(self.number_line.starting_position)
+        right_bound = float(self.number_line.end)
         step = 1
         traversal_distances = []
         tested_p_values = []
 
         for _ in range(self.significant_figures):
+            print("DEBUG: Clearing traversals and p-vals")
             traversal_distances.clear()
             tested_p_values.clear()
             step /= 10
             j = left_bound
+            print(f"DEBUG: Stepping from {j} to " +
+                  f"{right_bound} at intervals of {step}")
             while j <= right_bound:
                 self.number_line.starting_position = j
-                traversal = self.__gather(j)
+                print(f"DEBUG: Gathering data at n = {j}")
+                traversal = self.__gather()
+                print(f"DEBUG: Found traversal of {traversal}")
                 traversal_distances.append(traversal)
                 tested_p_values.append(j)
-                j += step
+                j += float(step)
 
+            # print("DEBUG: Attempting search through " +
+            #       f"{traversal_distances}, {tested_p_values}")
             optimal_p_val = self.__find_optimal_p(
                 traversal_distances, tested_p_values)
-            left_bound = optimal_p_val - step
-            right_bound = optimal_p_val + step
+            print(f"DEBUG: Optimal P found at {optimal_p_val}")
+            left_bound = min(optimal_p_val - step, self.number_line.end)
+            right_bound = min(optimal_p_val + step, self.number_line.end)
+            print(f"DEBUG: new bounds [{left_bound},{right_bound}]")
 
         return self.__find_optimal_p(traversal_distances, tested_p_values)
 
     def __find_optimal_p(self, traversal_distances, tested_p_values):
+        # print(f"DEBUG: Attempting traversal with " +
+        #       f"{traversal_distances}, {tested_p_values}")
         minimum_traversal = min(traversal_distances)
         idx = traversal_distances.index(minimum_traversal)
         return tested_p_values[idx]
