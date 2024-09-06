@@ -57,9 +57,6 @@ class TestSimulation:
         traversal = simulation._Simulation__gather()
         assert 0 <= traversal <= 3
 
-    def test_funnel_to_p_value(self):
-        pass
-
     def test_find_optimal_p(self):
         number_line = NumberLine(0, 2, 1, 3)
         simulation = Simulation(number_line, 1, 1, 1)
@@ -67,3 +64,10 @@ class TestSimulation:
         tested_p_values = [0, 1, 2, 3, 4]
         assert simulation._Simulation__find_optimal_p(
             traversal_distances, tested_p_values) == 0
+
+    def test_funnel_to_p_value(self):
+        number_line = NumberLine(0, 2, 1, 3)
+        significant_figures = random.randint(0, 10)
+        simulation = Simulation(number_line, 1, 1, significant_figures)
+        assert (simulation._Simulation__funnel_to_p_value() *
+                significant_figures) % (10*significant_figures) >= 1
