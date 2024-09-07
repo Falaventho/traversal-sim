@@ -298,17 +298,11 @@ class ProgressBar:
     def __get_current_percent(self):
         return int((self.current_count / self.max_count) * 100)
 
-    def __set_max_count(self, m):
-        self.max_count = m
-
-    def __set_current_count(self, c):
-        self.current_count = c
-
     def update_progress(self, count=None, max_count=None):
         if max_count:
-            self.__set_max_count(max_count)
+            self.max_count = max_count
         if count:
-            self.__set_current_count(count)
+            self.current_count = count
         self.__update()
 
     def increment_progress(self):
