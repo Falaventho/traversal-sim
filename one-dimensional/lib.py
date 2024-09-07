@@ -242,8 +242,8 @@ class UserInterface:
 
         repetitions = self.repetitions_var.get()
         max_progress_count = (right_bound - left_bound) * repetitions
-        self.progress_bar.update_progress(
-            count=0, max_count=max_progress_count)
+        self.progress_bar.update_progress(max_count=max_progress_count)
+        self.progress_bar.clear_progress()
 
         for n_value in range(left_bound, right_bound):
             optimal_dist = self.__run_simulation_for_n(n_value)
@@ -312,7 +312,11 @@ class ProgressBar:
         self.__update()
 
     def increment_progress(self):
-        self.__set_current_count(self.current_count + 1)
+        self.current_count += 1
+        self.__update()
+
+    def clear_progress(self):
+        self.current_count = 0
         self.__update()
 
     def __update(self):
