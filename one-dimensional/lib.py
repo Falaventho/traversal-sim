@@ -65,17 +65,19 @@ class NumberLine:
 
 
 class Simulation:
-    def __init__(self, number_line, iterations=1, repetitions=1, significant_figures=1):
+    def __init__(self, number_line, iterations=1, repetitions=1, significant_figures=1, progress_callback=None):
         self.number_line = number_line
         self.iterations = iterations
         self.repetitions = repetitions
         self.significant_figures = significant_figures
         self.optimal_p_values = []
+        self.progress_callback = progress_callback
 
     def run(self):
         for _ in range(self.repetitions):
             p_val = self.__funnel_to_p_value()
             self.optimal_p_values.append(p_val)
+            self.progress_callback()
 
     def __gather(self):
         dataset = []
@@ -163,13 +165,7 @@ class UserInterface:
             self.root, text="Quit", command=self.quit_app)
         self.quit_button.grid(row=5, column=2, padx=10, pady=10)
 
-        self.progress = ttk.Progressbar(
-            self.root, orient='horizontal', mode='determinate')
-        self.progress.grid(row=6, column=0, columnspan=3,
-                           padx=10, pady=10, sticky='ew')
-
-        self.progress_label = tk.Label(self.root, text='0%')
-        self.progress_label.grid(row=6, column=3, padx=10, pady=10, sticky='w')
+        self.progress_bar = ProgressBar(self.root, bar_row=6, label_row=6)
 
     def __create_label_and_entry(self, text, variable, row, col, scale_to=None, master=None, width=None):
         m = master or self.root
@@ -243,19 +239,15 @@ class UserInterface:
         optimal_distance_from_center_superset = []
         left_bound = self.n_left_bound.get()
         right_bound = self.n_right_bound.get() + 1
-        total_n_values = right_bound - left_bound
-        self.progress['maximum'] = total_n_values
-        self.progress['value'] = 0
-        self.progress_label.config(text="0%")
-        self.root.update_idletasks()
 
-        for i, n_value in enumerate(range(left_bound, right_bound)):
+        repetitions = self.repetitions_var.get()
+        max_progress_count = (right_bound - left_bound) * repetitions
+        self.progress_bar.update_progress(max_count=max_progress_count)
+        self.progress_bar.clear_progress()
+
+        for n_value in range(left_bound, right_bound):
             optimal_dist = self.__run_simulation_for_n(n_value)
             optimal_distance_from_center_superset.append(optimal_dist)
-            self.progress['value'] = i + 1
-            percentage = int((i+1) / total_n_values * 100)
-            self.progress_label.config(text=f"{percentage}%")
-            self.root.update_idletasks()
 
         return optimal_distance_from_center_superset
 
@@ -266,7 +258,7 @@ class UserInterface:
         number_line = NumberLine(
             start=0, end=2, starting_position=1, number_of_points=n_value)
         simulation = self.simulation_factory.create_simulation(
-            number_line, iteration_count, repetitions_count, sig_fig)
+            number_line, iteration_count, repetitions_count, sig_fig, self.progress_bar.increment_progress)
         simulation.run()
         distances_from_center = [abs(x - 1)
                                  for x in simulation.optimal_p_values]
@@ -277,8 +269,62 @@ class UserInterface:
 
 
 class SimulationFactory:
-    def create_simulation(self, number_line, iterations, repetitions, significant_figures):
-        return Simulation(number_line, iterations, repetitions, significant_figures)
+    def create_simulation(self, number_line, iterations, repetitions, significant_figures, progress_callback):
+        return Simulation(number_line, iterations, repetitions, significant_figures, progress_callback)
+
+# 6 0 6 3 progressbar settings
+# TODO instantiate progressbar on UI during startup (or with main and pass). Pass callback function to simulation via simulation_factory
+
+
+class ProgressBar:
+    def __init__(self, master, max_count=100, current_count=0, bar_row=0, label_row=0, bar_col=0, label_col=3):
+        self.max_count = max_count
+        self.current_count = current_count
+        self.master = master
+
+        self.progress_bar = ttk.Progressbar(
+            master, orient='horizontal', mode='determinate')
+        self.progress_bar.grid(row=bar_row, column=bar_col, columnspan=3,
+                               padx=10, pady=10, sticky='ew')
+
+        percentage = self.__get_current_percent()
+        self.progress_label = tk.Label(
+            master, text=f'{percentage}%')
+        self.progress_label.grid(
+            row=label_row, column=label_col, padx=10, pady=10, sticky='w')
+
+        self.__update()
+
+    def __get_current_percent(self):
+        return int((self.current_count / self.max_count) * 100)
+
+    def __set_max_count(self, m):
+        self.max_count = m
+
+    def __set_current_count(self, c):
+        self.current_count = c
+
+    def update_progress(self, count=None, max_count=None):
+        if max_count:
+            self.__set_max_count(max_count)
+        if count:
+            self.__set_current_count(count)
+        self.__update()
+
+    def increment_progress(self):
+        self.current_count += 1
+        self.__update()
+
+    def clear_progress(self):
+        self.current_count = 0
+        self.__update()
+
+    def __update(self):
+        percent = self.__get_current_percent()
+        self.progress_bar['maximum'] = self.max_count
+        self.progress_bar['value'] = self.current_count
+        self.progress_label.config(text=f'{percent}%')
+        self.master.update_idletasks()
 
 
 if __name__ == "__main__":
