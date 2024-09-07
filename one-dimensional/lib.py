@@ -1,8 +1,7 @@
 import random
 import matplotlib.pyplot as plt
-from datetime import datetime
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 import statistics
 from abc import ABC, abstractmethod
 
@@ -19,7 +18,7 @@ class RandomPointGenerator(PointGenerator):
 
 
 class NumberLine:
-    def __init__(self, start=0, end=2, starting_position=1, number_of_points=1, point_generator=None):
+    def __init__(self, start=0, end=2, starting_position=1, number_of_points=1, point_generator: PointGenerator = None):
         self.start = start
         self.end = end
         self.starting_position = starting_position
@@ -128,10 +127,19 @@ class UserInterface:
         self.sig_fig_var = tk.IntVar(value=3)
         self.iteration_var = tk.IntVar(value=1000)
         self.repetitions_var = tk.IntVar(value=3)
+        self.mean_decimal_places = tk.IntVar(value=2)
+        self.stdev_decimal_places = tk.IntVar(value=2)
 
         self.__setup_ui()
 
     def __setup_ui(self):
+
+        # Frames
+        self.stats_frame = ttk.LabelFrame(self.root, text="Statistics")
+        self.stats_frame.grid(row=7, column=0, columnspan=4,
+                              padx=10, pady=10, sticky='ew')
+
+        # Labels and entries
         self.__create_label_and_entry(
             "n-values from:", self.n_left_bound, 0, 0)
         self.__create_label_and_entry("to", self.n_right_bound, 0, 2)
@@ -141,9 +149,14 @@ class UserInterface:
             "Iteration Count", self.iteration_var, 3, 0, 1000000)
         self.__create_label_and_entry(
             "Repetitions Count", self.repetitions_var, 4, 0, 100)
+        self.__create_label_and_entry(
+            "Round final stats mean to places: ", self.mean_decimal_places, 0, 0, master=self.stats_frame, width=2)
+        self.__create_label_and_entry(
+            "Round final stats stdev to places: ", self.stdev_decimal_places, 1, 0, master=self.stats_frame, width=2)
 
+        # Buttons and progress
         self.run_button = ttk.Button(
-            self.root, text="Run", command=self.__run_simulation_with_single_plot)
+            self.root, text="Run", command=self.__try_run_simulation_with_single_plot)
         self.run_button.grid(row=5, column=1, padx=10, pady=10)
 
         self.quit_button = ttk.Button(
@@ -158,26 +171,70 @@ class UserInterface:
         self.progress_label = tk.Label(self.root, text='0%')
         self.progress_label.grid(row=6, column=3, padx=10, pady=10, sticky='w')
 
-    def __create_label_and_entry(self, text, variable, row, col, scale_to=None):
-        label = ttk.Label(self.root, text=text)
+    def __create_label_and_entry(self, text, variable, row, col, scale_to=None, master=None, width=None):
+        m = master or self.root
+        w = width or 20
+
+        label = ttk.Label(m, text=text)
         label.grid(row=row, column=col, padx=10, pady=5)
-        entry = ttk.Entry(self.root, textvariable=variable)
+        entry = ttk.Entry(m, textvariable=variable, width=w)
         entry.grid(row=row, column=col + 1, padx=10, pady=5)
         if scale_to:
-            slider = ttk.Scale(self.root, from_=1, to=scale_to, orient='horizontal',
+            slider = ttk.Scale(m, from_=1, to=scale_to, orient='horizontal',
                                variable=variable, command=lambda val: variable.set(int(float(val))))
             slider.grid(row=row, column=col + 2, padx=10, pady=5)
+
+    def __validate_entry_data(self) -> list[str]:
+        err_msg_list = []
+        left_bound = self.n_left_bound.get()
+        right_bound = self.n_right_bound.get()
+        if left_bound > right_bound:
+            err_msg_list.append(
+                "n-value error: left bound greater than right bound")
+
+        return err_msg_list
+
+    def __try_run_simulation_with_single_plot(self):
+        err_msg_list = self.__validate_entry_data()
+        if len(err_msg_list) == 0:
+            self.__run_simulation_with_single_plot()
+        else:
+            messagebox.showwarning(title="Input data error", message=f"Error messages:\n\n" +
+                                   f"{'\n'.join(err_msg_list)}\n\nResolve input errors and press run.")
 
     def __run_simulation_with_single_plot(self):
         optimal_distance_from_center_superset = self.__run_simulation_across_n_values()
         fig, ax = plt.subplots()
         left_bound = self.n_left_bound.get()
+        mean_decimal_places = self.mean_decimal_places.get()
+        stdev_decimal_places = self.stdev_decimal_places.get()
         for i, subset in enumerate(optimal_distance_from_center_superset):
             n_value = left_bound + i
             x_values = [n_value] * len(subset)
             ax.scatter(x_values, subset, label=f'n={n_value}')
+
+            # Calculate statistics
+            mean = statistics.mean(subset)
+            stdev = statistics.stdev(subset)
+
+            # Round statistics to user-specified precision
+            mean = round(mean, mean_decimal_places)
+            stdev = round(stdev, stdev_decimal_places)
+
+            # Create labels for each n value
+            n_label = tk.Label(self.stats_frame, text=f"n={n_value} ")
+            n_label.grid(row=i+2, column=0, padx=10, pady=5)
+
+            mean_label = tk.Label(self.stats_frame,
+                                  text=f"Mean: {mean}")
+            mean_label.grid(row=i+2, column=1, padx=10, pady=5)
+
+            stdev_label = tk.Label(self.stats_frame,
+                                   text=f"Std Dev: {stdev}")
+            stdev_label.grid(row=i+2, column=2, padx=10, pady=5)
+
         ax.set_xlabel('n value')
-        ax.set_ylabel('Optimal distances from center')
+        ax.set_ylabel('Optimal distance from center')
         ax.set_title('Optimal Distances from Center for Different n Values')
         ax.legend()
         plt.show()
@@ -188,6 +245,9 @@ class UserInterface:
         right_bound = self.n_right_bound.get() + 1
         total_n_values = right_bound - left_bound
         self.progress['maximum'] = total_n_values
+        self.progress['value'] = 0
+        self.progress_label.config(text="0%")
+        self.root.update_idletasks()
 
         for i, n_value in enumerate(range(left_bound, right_bound)):
             optimal_dist = self.__run_simulation_for_n(n_value)
