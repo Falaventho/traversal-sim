@@ -163,14 +163,6 @@ class UserInterface:
             self.root, text="Quit", command=self.quit_app)
         self.quit_button.grid(row=5, column=2, padx=10, pady=10)
 
-        self.progress = ttk.Progressbar(
-            self.root, orient='horizontal', mode='determinate')
-        self.progress.grid(row=6, column=0, columnspan=3,
-                           padx=10, pady=10, sticky='ew')
-
-        self.progress_label = tk.Label(self.root, text='0%')
-        self.progress_label.grid(row=6, column=3, padx=10, pady=10, sticky='w')
-
     def __create_label_and_entry(self, text, variable, row, col, scale_to=None, master=None, width=None):
         m = master or self.root
         w = width or 20
@@ -279,6 +271,50 @@ class UserInterface:
 class SimulationFactory:
     def create_simulation(self, number_line, iterations, repetitions, significant_figures):
         return Simulation(number_line, iterations, repetitions, significant_figures)
+
+# 6 0 6 3 progressbar settings
+
+
+class ProgressBar:
+    def __init__(self, master, max_count=100, current_count=0, bar_row=0, label_row=0, bar_col=0, label_col=3):
+        self.max_count = max_count
+        self.current_count = current_count
+        self.master = master
+        percentage = self.__get_current_percent()
+
+        self.progress_bar = ttk.Progressbar(
+            master, orient='horizontal', mode='determinate')
+        self.progress_bar.grid(row=bar_row, column=bar_col, columnspan=3,
+                               padx=10, pady=10, sticky='ew')
+
+        self.progress_label = tk.Label(
+            master, text=f'{self.__get_current_percent()}%')
+        self.progress_label.grid(
+            row=label_row, column=label_col, padx=10, pady=10, sticky='w')
+
+        self.__update()
+
+    def __get_current_percent(self):
+        return int(self.current_count / self.max_count) * 100
+
+    def __set_max_count(self, m):
+        self.max_count = m
+
+    def __set_current_count(self, c):
+        self.current_count = c
+
+    def update_progress(self, count=None, max_count=None):
+        if max_count:
+            self.__set_max_count(max_count)
+        if count:
+            self.__set_current_count(current_count)
+        self.__update()
+
+    def __update(self):
+        self.progress_bar['maximum'] = self.max_count
+        self.progress_bar['value'] = self.current_count
+        self.progress_label.config(text=f'{self.__get_current_percent()}%')
+        self.master.update_idletasks()
 
 
 if __name__ == "__main__":
