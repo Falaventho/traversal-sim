@@ -5,6 +5,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import statistics
 from abc import ABC, abstractmethod
+import placement_optimization_sim as aposrs
 
 
 class PointGenerator(ABC):
@@ -32,17 +33,11 @@ class NumberLine:
     def regenerate_data(self):
         self.points = self.point_generator.generate_points(
             self.start, self.end, self.number_of_points)
-        self.max_point = max(self.points)
-        self.min_point = min(self.points)
         self.traversal_distance = self.__find_best_path()
 
     # ! Potential Bottleneck
     def __find_best_path(self):
-        dist_to_max = abs(self.starting_position - self.max_point)
-        dist_to_min = abs(self.starting_position - self.min_point)
-        first_traversal = min(dist_to_max, dist_to_min)
-        second_traversal = abs(self.max_point - self.min_point)
-        return first_traversal + second_traversal
+        return aposrs.find_best_path(self.points, self.starting_position)
 
     def display(self):
         print(f"Number line segment: [{self.start}, {self.end}]")

@@ -1,0 +1,11 @@
+F:\projects\placement-optimization-sim\target\debug\deps\liblibc-9a8524f0429001fc.rmeta: C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src/lib.rs C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src\macros.rs C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src\fixed_width_ints.rs C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src\windows\mod.rs C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src\windows\msvc\mod.rs
+
+F:\projects\placement-optimization-sim\target\debug\deps\liblibc-9a8524f0429001fc.rlib: C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src/lib.rs C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src\macros.rs C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src\fixed_width_ints.rs C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src\windows\mod.rs C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src\windows\msvc\mod.rs
+
+F:\projects\placement-optimization-sim\target\debug\deps\libc-9a8524f0429001fc.d: C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src/lib.rs C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src\macros.rs C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src\fixed_width_ints.rs C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src\windows\mod.rs C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src\windows\msvc\mod.rs
+
+C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src/lib.rs:
+C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src\macros.rs:
+C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src\fixed_width_ints.rs:
+C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src\windows\mod.rs:
+C:\Users\Nick\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libc-0.2.158\src\windows\msvc\mod.rs:
