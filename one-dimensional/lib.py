@@ -33,11 +33,8 @@ class NumberLine:
     def regenerate_data(self):
         self.points = self.point_generator.generate_points(
             self.start, self.end, self.number_of_points)
-        self.traversal_distance = self.__find_best_path()
-
-    # ! Potential Bottleneck
-    def __find_best_path(self):
-        return aposrs.find_best_path(self.points, self.starting_position)
+        self.traversal_distance = aposrs.find_best_path(
+            self.points, self.starting_position)
 
     def display(self):
         print(f"Number line segment: [{self.start}, {self.end}]")
