@@ -1,5 +1,6 @@
 import random
 import matplotlib.pyplot as plt
+import time
 import tkinter as tk
 from tkinter import ttk, messagebox
 import statistics
@@ -119,10 +120,11 @@ class Simulation:
 
 
 class UserInterface:
-    def __init__(self, root, simulation_factory):
+    def __init__(self, root, simulation_factory, program_timer):
         self.root = root
         self.root.title("Simulation Control Panel")
         self.simulation_factory = simulation_factory
+        self.program_timer = program_timer
 
         self.n_left_bound = tk.IntVar(value=1)
         self.n_right_bound = tk.IntVar(value=1)
@@ -133,6 +135,7 @@ class UserInterface:
         self.stdev_decimal_places = tk.IntVar(value=2)
 
         self.__setup_ui()
+        self.program_timer.reset_counter("UI Init")
 
     def __setup_ui(self):
 
@@ -166,6 +169,8 @@ class UserInterface:
         self.quit_button.grid(row=5, column=2, padx=10, pady=10)
 
         self.progress_bar = ProgressBar(self.root, bar_row=6, label_row=6)
+
+        self.program_timer.report_step("UI Setup")
 
     def __create_label_and_entry(self, text, variable, row, col, scale_to=None, master=None, width=None):
         m = master or self.root
@@ -246,8 +251,10 @@ class UserInterface:
         self.progress_bar.clear_progress()
 
         for n_value in range(left_bound, right_bound):
+            self.program_timer.reset_counter(f"sim n={n_value}")
             optimal_dist = self.__run_simulation_for_n(n_value)
             optimal_distance_from_center_superset.append(optimal_dist)
+            self.program_timer.report_step(f"sim n={n_value} complete")
 
         return optimal_distance_from_center_superset
 
@@ -274,6 +281,39 @@ class SimulationFactory:
 
 # 6 0 6 3 progressbar settings
 # TODO instantiate progressbar on UI during startup (or with main and pass). Pass callback function to simulation via simulation_factory
+
+
+class ProgramTimer:
+    def __init__(self):
+        self.init_time = time.time()
+        self.counter = time.time()
+        self.start_time = None
+
+    def start(self):
+        self.start_time = time.time()
+
+    def get_time_since_start(self):
+        return time.time() - self.start_time
+
+    def get_time_since_init(self):
+        return time.time() - self.init_time
+
+    def get_counter_time(self):
+        return time.tim() - self.counter
+
+    def reset_counter(self, step=None):
+        print(f"Counter reset on {step}")
+        self.counter = time.time()
+
+    def report_step(self, step):
+        now_time = time.time()
+        i_time = now_time - self.init_time
+        s_time = now_time - (self.start_time or now_time)
+        c_time = now_time - self.counter
+        print(f"Step {step} report:")
+        print(f"Time since init: {i_time:.2f}")
+        print(f"Time since start: {s_time:.2f}")
+        print(f"Time since counter reset: {c_time:.2f}")
 
 
 class ProgressBar:
@@ -324,5 +364,6 @@ class ProgressBar:
 if __name__ == "__main__":
     root = tk.Tk()
     simulation_factory = SimulationFactory()
-    app = UserInterface(root, simulation_factory)
+    timer = ProgramTimer()
+    app = UserInterface(root, simulation_factory, timer)
     root.mainloop()
