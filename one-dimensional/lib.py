@@ -89,6 +89,7 @@ class Simulation:
             dataset.append(self.number_line.traversal_distance)
         return statistics.mean(dataset)
 
+    # ! Definite Bottleneck
     def __funnel_to_p_value(self):
         left_bound = float(self.number_line.starting_position)
         right_bound = float(self.number_line.end)
