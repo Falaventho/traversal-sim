@@ -28,6 +28,7 @@ class NumberLine:
         self.point_generator = point_generator or RandomPointGenerator()
         self.regenerate_data()
 
+    # ! Potential Bottleneck
     def regenerate_data(self):
         self.points = self.point_generator.generate_points(
             self.start, self.end, self.number_of_points)
@@ -35,6 +36,7 @@ class NumberLine:
         self.min_point = min(self.points)
         self.traversal_distance = self.__find_best_path()
 
+    # ! Potential Bottleneck
     def __find_best_path(self):
         dist_to_max = abs(self.starting_position - self.max_point)
         dist_to_min = abs(self.starting_position - self.min_point)
@@ -197,6 +199,7 @@ class UserInterface:
 
     def __try_run_simulation_with_single_plot(self):
         err_msg_list = self.__validate_entry_data()
+        self.program_timer.start()
         if len(err_msg_list) == 0:
             self.__run_simulation_with_single_plot()
         else:
