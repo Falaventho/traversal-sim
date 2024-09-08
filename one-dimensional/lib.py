@@ -209,7 +209,7 @@ class UserInterface:
 
     def __run_simulation_with_single_plot(self):
         optimal_distance_from_center_superset = self.__run_simulation_across_n_values()
-        ProgramTimer.report_step("Simulation Complete")
+        self.program_timer.report_step("Simulation Complete")
         fig, ax = plt.subplots()
         left_bound = self.n_left_bound.get()
         mean_decimal_places = self.mean_decimal_places.get()
