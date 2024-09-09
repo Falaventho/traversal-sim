@@ -12,17 +12,17 @@ Define the problem in 1d space, solve the 1d problem, then apply the solution to
 
 ## The One-Dimensional Problem
 
-There is a line segment of length 2 on which n randomly located points will be placed. Before the points are slected, choose a starting point P that will minimize the travel distance required to contact all points.
+There is a line segment of length 2  (spanning -1 to 1 inclusive) on which n randomly located points will be placed. Before the points are slected, choose a starting point P that will minimize the travel distance required to contact all points.
 
 ## The One-Dimensional Assumptions
 
-At n = 1, the center of the line segment (P = 1) is the optimal solution.
+At n = 1, the center of the line segment (P = 0) is the optimal solution.
 
-At n = 2, the center of the line segment (P = 1) is still the optimal solution.
+At n = 2, the center of the line segment (P = 0) is still the optimal solution.
 
-At n = 3, the optimal solution is not found at P = 0 || P = 2
+At n = 3, the optimal solution is not found at P = -1 or P = 1
 
-As n -> ♾️, the optimal solutions are found closer to each end of the line segment (P = 0 || P = 2).
+As n -> ∞, the optimal solutions are found closer to each end of the line segment (P = -1 or P = 1).
 
 ## Initial Findings
 
@@ -35,9 +35,9 @@ Below is the same graph with log<sub>10</sub>(x-1) in orange and log<sub>e</sub>
 
 ### Numerical Findings
 
-A cursory examination of n&nbsp;=&nbsp;100 held true the limit hypothesis with a 100,000 iteration-per-step test on a 0.001 width interval step showing P&nbsp;=&nbsp;1.985 on a segment spanning 0 to 2. From this, a 0.985 distance-from-center value can be extracted.
+A cursory examination of n&nbsp;=&nbsp;100 held true the limit hypothesis with a 100,000 iteration-per-step test on a 0.001 width interval step showing P&nbsp;=&nbsp;1.985 on a segment spanning -1 to 1. From this, a 0.985 distance-from-center value can be extracted.
 
-Below, the distance D from center for optimal traversal distance for n points on a line segment spanning 0 to 2 inclusive where 1<=n<=10:
+Below, the distance from center D for optimal traversal distance for n points on a line segment spanning -1 to 1 inclusive where 1<=n<=10:
 
 n = 1, D = 0.000<br>
 n = 2, D = 0.000<br>
