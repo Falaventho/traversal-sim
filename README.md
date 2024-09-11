@@ -12,7 +12,7 @@ Define the problem in 1d space, solve the 1d problem, then apply the solution to
 
 ## The One-Dimensional Problem
 
-There is a line segment of length 2  (spanning -1 to 1 inclusive) on which n randomly located points will be placed. Before the points are slected, choose a starting point P that will minimize the travel distance required to contact all points.
+There is a line segment of length 2 (spanning -1 to 1 inclusive) on which n points will be randomly placed with uniform probability. Before the points are slected, choose a starting point P that will minimize the travel distance required to contact all points.
 
 ## The One-Dimensional Assumptions
 
@@ -20,9 +20,9 @@ At n = 1, the center of the line segment (P = 0) is the optimal solution.
 
 At n = 2, the center of the line segment (P = 0) is still the optimal solution.
 
-At n = 3, the optimal solution is not found at P = -1 or P = 1
+As n increases, the optimal solutions are found closer and closer to the ends of the line segment.
 
-As n -> ∞, the optimal solutions are found closer to each end of the line segment (P = -1 or P = 1).
+As n approaches infinity, the optimal solutions are found at the ends of the line segment (P = -1 or P = 1).
 
 ## Initial Findings
 
