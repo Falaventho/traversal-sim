@@ -17,7 +17,6 @@ class NumberLine:
 
         self.regenerate_data()
 
-    # ! Potential Bottleneck
     def regenerate_data(self):
         self.points, self.traversal_distance = aposrs.generate_data(
             self.start, self.end, self.number_of_points, self.starting_position)
