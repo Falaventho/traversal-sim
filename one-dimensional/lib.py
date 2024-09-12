@@ -4,37 +4,23 @@ import time
 import tkinter as tk
 from tkinter import ttk, messagebox
 import statistics
-from abc import ABC, abstractmethod
 import placement_optimization_sim as aposrs
 
 
-class PointGenerator(ABC):
-    @abstractmethod
-    def generate_points(self, start, end, n):
-        pass
-
-
-class RandomPointGenerator(PointGenerator):
-    def generate_points(self, start, end, n):
-        return [random.uniform(start, end) for _ in range(n)]
-
-
 class NumberLine:
-    def __init__(self, start=0, end=2, starting_position=1, number_of_points=1, point_generator: PointGenerator = None):
+    def __init__(self, start=0, end=2, starting_position=1, number_of_points=1):
         self.start = start
         self.end = end
         self.starting_position = starting_position
         self.number_of_points = number_of_points
         self.points = []
-        self.point_generator = point_generator or RandomPointGenerator()
+
         self.regenerate_data()
 
     # ! Potential Bottleneck
     def regenerate_data(self):
-        self.points = self.point_generator.generate_points(
-            self.start, self.end, self.number_of_points)
-        self.traversal_distance = aposrs.find_best_path(
-            self.points, self.starting_position)
+        self.points, self.traversal_distance = aposrs.generate_data(
+            self.start, self.end, self.number_of_points, self.starting_position)
 
     def display(self):
         print(f"Number line segment: [{self.start}, {self.end}]")
