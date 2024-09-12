@@ -1,7 +1,7 @@
 use pyo3::prelude::*;
 use rand::Rng;
 
-/// Finds the best path given a set of points and a starting position.
+/// Generates n random points across a range of start to end inclusive and finds optimal traversal path from starting_position
 #[pyfunction]
 fn generate_data(start: f64, end: f64, n: usize, starting_position: f64) -> (Vec<f64>, f64) {
     let mut rng = rand::thread_rng();
@@ -10,6 +10,7 @@ fn generate_data(start: f64, end: f64, n: usize, starting_position: f64) -> (Vec
     (points, traversal_distance)
 }
 
+/// Finds the best path given a set of points and a starting position.
 fn find_best_path(points: Vec<f64>, starting_position: f64) -> f64 {
     // Use iterators to find the min and max points
     let min_point = points.iter().cloned().fold(f64::INFINITY, f64::min);
