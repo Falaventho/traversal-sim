@@ -1,5 +1,6 @@
 import random
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 import time
 import tkinter as tk
 from tkinter import ttk, messagebox
@@ -8,7 +9,6 @@ from placement_optimization_sim import NumberLine
 
 
 class Simulation:
-    # ! nl Utilization
     def __init__(self, number_line, iterations=1, repetitions=1, significant_figures=1, progress_callback=None):
         self.number_line = number_line
         self.iterations = iterations
@@ -26,7 +26,6 @@ class Simulation:
     def __gather(self):
         dataset = []
         for _ in range(self.iterations):
-            # ! nl Utilization
             dataset.append(self.number_line.regenerate_data())
         return statistics.mean(dataset)
 
@@ -184,6 +183,7 @@ class UserInterface:
         ax.set_ylabel('Optimal distance from center')
         ax.set_title('Optimal Distances from Center for Different n Values')
         ax.legend()
+        ax.xaxis.set_major_locator(MaxNLocator(integer=True))
         plt.show()
 
     def __run_simulation_across_n_values(self):
@@ -208,10 +208,8 @@ class UserInterface:
         sig_fig = self.sig_fig_var.get()
         iteration_count = self.iteration_var.get()
         repetitions_count = self.repetitions_var.get()
-        # ! nl Instantiation
         number_line = NumberLine(
             start=0.0, end=2.0, starting_position=1.0, number_of_points=n_value)
-        # ! nl Utilization
         simulation = Simulation(
             number_line, iteration_count, repetitions_count, sig_fig, self.progress_bar.increment_progress)
         simulation.run()
