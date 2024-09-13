@@ -4,46 +4,11 @@ import time
 import tkinter as tk
 from tkinter import ttk, messagebox
 import statistics
-import placement_optimization_sim as aposrs
-
-
-class NumberLine:
-    def __init__(self, start=0, end=2, starting_position=1, number_of_points=1):
-        self.start = start
-        self.end = end
-        self.starting_position = starting_position
-        self.number_of_points = number_of_points
-
-        self.regenerate_data()
-
-    def regenerate_data(self):
-        self.traversal_distance = aposrs.generate_traversal(
-            self.start, self.end, self.number_of_points, self.starting_position)
-
-    def display(self):
-        print(f"Number line segment: [{self.start}, {self.end}]")
-        print(f"Points on the line segment: {sorted(self.points)}")
-        print(f"Optimal path from starting position {self.starting_position} requires a traversal of" +
-              f"{self.traversal_distance} to contact all points.")
-
-    def visualize(self, label=False):
-        fig, ax = plt.subplots()
-        ax.plot([self.start, self.end], [0, 0], 'k-', lw=2)
-        ax.plot(self.starting_position, 0, 'bo')
-        ax.text(self.starting_position, -0.02,
-                'Start', ha='center', fontsize=10)
-        for point in self.points:
-            ax.plot(point, 0, 'ro')
-            if label:
-                ax.text(point, 0.02, f'{point:.2f}', ha='center', fontsize=10)
-        ax.set_xlim(self.start - 0.1, self.end + 0.1)
-        ax.get_yaxis().set_visible(False)
-        ax.set_xlabel('Number Line')
-        ax.set_title('Number Line with Points')
-        plt.show()
+from placement_optimization_sim import NumberLine
 
 
 class Simulation:
+    # ! nl Utilization
     def __init__(self, number_line, iterations=1, repetitions=1, significant_figures=1, progress_callback=None):
         self.number_line = number_line
         self.iterations = iterations
@@ -61,14 +26,14 @@ class Simulation:
     def __gather(self):
         dataset = []
         for _ in range(self.iterations):
-            self.number_line.regenerate_data()
-            dataset.append(self.number_line.traversal_distance)
+            # ! nl Utilization
+            dataset.append(self.number_line.regenerate_data())
         return statistics.mean(dataset)
 
     # ! Definite Bottleneck
     def __funnel_to_p_value(self):
-        left_bound = float(self.number_line.starting_position)
-        right_bound = float(self.number_line.end)
+        left_bound = float(self.number_line.get_starting_position())
+        right_bound = float(self.number_line.get_end())
         step = 1
         traversal_distances = []
         tested_p_values = []
@@ -79,7 +44,7 @@ class Simulation:
             step /= 10
             j = left_bound
             while j <= right_bound:
-                self.number_line.starting_position = j
+                self.number_line.set_starting_position(j)
                 traversal = self.__gather()
                 traversal_distances.append(traversal)
                 tested_p_values.append(j)
@@ -87,8 +52,9 @@ class Simulation:
 
             optimal_p_val = self.__find_optimal_p(
                 traversal_distances, tested_p_values)
-            left_bound = min(optimal_p_val - step, self.number_line.end)
-            right_bound = min(optimal_p_val + step, self.number_line.end)
+            end = self.number_line.get_end()
+            left_bound = min(optimal_p_val - step, end)
+            right_bound = min(optimal_p_val + step, end)
 
         return self.__find_optimal_p(traversal_distances, tested_p_values)
 
@@ -99,10 +65,9 @@ class Simulation:
 
 
 class UserInterface:
-    def __init__(self, root, simulation_factory, program_timer):
+    def __init__(self, root, program_timer):
         self.root = root
         self.root.title("Simulation Control Panel")
-        self.simulation_factory = simulation_factory
         self.program_timer = program_timer
 
         self.n_left_bound = tk.IntVar(value=1)
@@ -243,9 +208,11 @@ class UserInterface:
         sig_fig = self.sig_fig_var.get()
         iteration_count = self.iteration_var.get()
         repetitions_count = self.repetitions_var.get()
+        # ! nl Instantiation
         number_line = NumberLine(
-            start=0, end=2, starting_position=1, number_of_points=n_value)
-        simulation = self.simulation_factory.create_simulation(
+            start=0.0, end=2.0, starting_position=1.0, number_of_points=n_value)
+        # ! nl Utilization
+        simulation = Simulation(
             number_line, iteration_count, repetitions_count, sig_fig, self.progress_bar.increment_progress)
         simulation.run()
         distances_from_center = [abs(x - 1)
@@ -254,11 +221,6 @@ class UserInterface:
 
     def quit_app(self):
         self.root.quit()
-
-
-class SimulationFactory:
-    def create_simulation(self, number_line, iterations, repetitions, significant_figures, progress_callback):
-        return Simulation(number_line, iterations, repetitions, significant_figures, progress_callback)
 
 
 class ProgramTimer:
@@ -341,7 +303,6 @@ class ProgressBar:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    simulation_factory = SimulationFactory()
     timer = ProgramTimer()
-    app = UserInterface(root, simulation_factory, timer)
+    app = UserInterface(root, timer)
     root.mainloop()
