@@ -13,12 +13,11 @@ class NumberLine:
         self.end = end
         self.starting_position = starting_position
         self.number_of_points = number_of_points
-        self.points = []
 
         self.regenerate_data()
 
     def regenerate_data(self):
-        self.points, self.traversal_distance = aposrs.generate_data(
+        self.traversal_distance = aposrs.generate_traversal(
             self.start, self.end, self.number_of_points, self.starting_position)
 
     def display(self):
@@ -260,9 +259,6 @@ class UserInterface:
 class SimulationFactory:
     def create_simulation(self, number_line, iterations, repetitions, significant_figures, progress_callback):
         return Simulation(number_line, iterations, repetitions, significant_figures, progress_callback)
-
-# 6 0 6 3 progressbar settings
-# TODO instantiate progressbar on UI during startup (or with main and pass). Pass callback function to simulation via simulation_factory
 
 
 class ProgramTimer:
