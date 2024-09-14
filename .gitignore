@@ -1,4 +1,7 @@
 .venv/
 __pycache__/
 .pytest_cache/
-target/
+docu-assets/
+target/debug/
+target/release
+target/*.*
