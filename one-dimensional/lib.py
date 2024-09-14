@@ -34,6 +34,7 @@ class Simulation:
         left_bound = float(self.number_line.get_starting_position())
         right_bound = float(self.number_line.get_end())
         step = 1
+        # ! Space for data structure improvement here, lists are not the best
         traversal_distances = []
         tested_p_values = []
 
@@ -196,6 +197,7 @@ class UserInterface:
         self.progress_bar.update_progress(max_count=max_progress_count)
         self.progress_bar.clear_progress()
 
+        # ! Target for multithreading
         for n_value in range(left_bound, right_bound):
             self.program_timer.reset_counter(f"sim n={n_value}")
             optimal_dist = self.__run_simulation_for_n(n_value)
