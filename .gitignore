@@ -2,6 +2,7 @@
 __pycache__/
 .pytest_cache/
 docu-assets/
+target/
 target/debug/
 target/release
 target/*.*
