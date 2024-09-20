@@ -145,8 +145,9 @@ class UserInterface:
         if len(err_msg_list) == 0:
             self.__run_simulation_with_single_plot()
         else:
+            err_block = '\n'.join(err_msg_list)
             messagebox.showwarning(title="Input data error", message=f"Error messages:\n\n" +
-                                   f"{'\n'.join(err_msg_list)}\n\nResolve input errors and press run.")
+                                   f"{err_block}\n\nResolve input errors and press run.")
 
     def __run_simulation_with_single_plot(self):
         optimal_distance_from_center_superset = self.__run_simulation_across_n_values()
