@@ -69,6 +69,7 @@ class UserInterface:
         self.root = root
         self.root.title("Simulation Control Panel")
         self.program_timer = program_timer
+        self.optimal_distance_from_center_superset = []
 
         self.n_left_bound = tk.IntVar(value=1)
         self.n_right_bound = tk.IntVar(value=1)
@@ -115,7 +116,9 @@ class UserInterface:
         self.progress_bar = ProgressBar(self.root, bar_row=6, label_row=6)
 
         self.recalculate_stats_button = ttk.Button(
-            self.stats_frame, text="Recalculate", command=self.__calculate_and_display_stats)
+            self.stats_frame, text="Recalculate", command=self.__calculate_stats_for_superset)
+        self.recalculate_stats_button.grid(row=0, column=2, padx=10, pady=10)
+
         self.program_timer.report_step("UI Setup")
 
     def __create_label_and_entry(self, text, variable, row, col, scale_to=None, master=None, width=None):
@@ -142,6 +145,10 @@ class UserInterface:
         return err_msg_list
 
     def __calculate_stats_for_superset(self):
+        if not self.optimal_distance_from_center_superset:
+            messagebox.showwarning(
+                title="Recalculate Error", message="No dataset available to run calculations on. Run a simulation first.")
+            return
         for idx, subset in enumerate(self.optimal_distance_from_center_superset):
             n = self.left_bound + idx
             self.__calculate_and_display_stats(subset, n, n+2)
