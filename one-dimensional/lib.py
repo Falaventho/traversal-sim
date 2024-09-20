@@ -114,6 +114,8 @@ class UserInterface:
 
         self.progress_bar = ProgressBar(self.root, bar_row=6, label_row=6)
 
+        self.recalculate_stats_button = ttk.Button(
+            self.stats_frame, text="Recalculate", command=self.__calculate_and_display_stats)
         self.program_timer.report_step("UI Setup")
 
     def __create_label_and_entry(self, text, variable, row, col, scale_to=None, master=None, width=None):
@@ -139,6 +141,36 @@ class UserInterface:
 
         return err_msg_list
 
+    def __calculate_stats_for_superset(self):
+        for idx, subset in enumerate(self.optimal_distance_from_center_superset):
+            n = self.left_bound + idx
+            self.__calculate_and_display_stats(subset, n, n+2)
+
+    def __calculate_and_display_stats(self, subset, n_value, row_idx):
+
+        mean_decimal_places = self.mean_decimal_places.get()
+        stdev_decimal_places = self.stdev_decimal_places.get()
+
+        # Calculate statistics
+        mean = statistics.mean(subset)
+        stdev = statistics.stdev(subset)
+
+        # Round statistics to user-specified precision
+        mean = round(mean, mean_decimal_places)
+        stdev = round(stdev, stdev_decimal_places)
+
+        # Create labels for each n value
+        n_label = tk.Label(self.stats_frame, text=f"n={n_value} ")
+        n_label.grid(row=row_idx, column=0, padx=10, pady=5)
+
+        mean_label = tk.Label(self.stats_frame,
+                              text=f"Mean: {mean}")
+        mean_label.grid(row=row_idx, column=1, padx=10, pady=5)
+
+        stdev_label = tk.Label(self.stats_frame,
+                               text=f"Std Dev: {stdev}")
+        stdev_label.grid(row=row_idx, column=2, padx=10, pady=5)
+
     def __try_run_simulation_with_single_plot(self):
         err_msg_list = self.__validate_entry_data()
         self.program_timer.start()
@@ -150,36 +182,15 @@ class UserInterface:
                                    f"{err_block}\n\nResolve input errors and press run.")
 
     def __run_simulation_with_single_plot(self):
-        optimal_distance_from_center_superset = self.__run_simulation_across_n_values()
+        self.optimal_distance_from_center_superset = self.__run_simulation_across_n_values()
         self.program_timer.report_step("Simulation Complete")
         fig, ax = plt.subplots()
-        left_bound = self.n_left_bound.get()
-        mean_decimal_places = self.mean_decimal_places.get()
-        stdev_decimal_places = self.stdev_decimal_places.get()
-        for i, subset in enumerate(optimal_distance_from_center_superset):
-            n_value = left_bound + i
+        self.left_bound = self.n_left_bound.get()
+        for i, subset in enumerate(self.optimal_distance_from_center_superset):
+            n_value = self.left_bound + i
             x_values = [n_value] * len(subset)
             ax.scatter(x_values, subset, label=f'n={n_value}')
-
-            # Calculate statistics
-            mean = statistics.mean(subset)
-            stdev = statistics.stdev(subset)
-
-            # Round statistics to user-specified precision
-            mean = round(mean, mean_decimal_places)
-            stdev = round(stdev, stdev_decimal_places)
-
-            # Create labels for each n value
-            n_label = tk.Label(self.stats_frame, text=f"n={n_value} ")
-            n_label.grid(row=i+2, column=0, padx=10, pady=5)
-
-            mean_label = tk.Label(self.stats_frame,
-                                  text=f"Mean: {mean}")
-            mean_label.grid(row=i+2, column=1, padx=10, pady=5)
-
-            stdev_label = tk.Label(self.stats_frame,
-                                   text=f"Std Dev: {stdev}")
-            stdev_label.grid(row=i+2, column=2, padx=10, pady=5)
+        self.__calculate_stats_for_superset()
 
         ax.set_xlabel('n value')
         ax.set_ylabel('Optimal distance from center')
