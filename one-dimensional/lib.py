@@ -1,9 +1,12 @@
+import json
+import os
+import uuid
 import random
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 import time
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 import statistics
 from placement_optimization_sim import NumberLine
 
@@ -70,6 +73,7 @@ class UserInterface:
         self.root.title("Simulation Control Panel")
         self.program_timer = program_timer
         self.optimal_distance_from_center_superset = []
+        self.metadata = {}
 
         self.n_left_bound = tk.IntVar(value=1)
         self.n_right_bound = tk.IntVar(value=1)
@@ -136,7 +140,15 @@ class UserInterface:
 
         self.quit_button = ttk.Button(
             self.root, text="Quit", command=self.quit_app)
-        self.quit_button.grid(row=5, column=2, padx=10, pady=10)
+        self.quit_button.grid(row=5, column=4, padx=10, pady=10)
+
+        self.export_button = ttk.Button(
+            self.root, text="Export Run", command=self.try_export)
+        self.export_button.grid(row=5, column=2, padx=10, pady=10)
+
+        self.import_button = ttk.Button(
+            self.root, text="Import Run", command=self.try_import)
+        self.import_button.grid(row=5, column=3, padx=10, pady=10)
 
         self.progress_bar = ProgressBar(self.root, bar_row=6, label_row=6)
 
@@ -157,6 +169,21 @@ class UserInterface:
     def __on_enter_key(self, event):
         self.__try_run_simulation_with_single_plot()
 
+    def try_export(self):
+        if self.metadata and self.optimal_distance_from_center_superset:
+            self.__export_data("./exports")
+        else:
+            messagebox.showwarning(
+                title="Export Failed", message="Metadata or dataset missing or corrupted, run or import a simulation before exporting data.")
+
+    def try_import(self):
+        file_path = filedialog.askopenfilename(
+            title="Select file",
+            filetypes=(("JSON files", "*.json"), ("All files", "*.*"))
+        )
+        if file_path:
+            self.__import_data(file_path)
+
     def __create_label_and_entry(self, text, variable, row, col, scale_to=None, master=None, width=None, focus=False):
         m = master or self.root
         w = width or 20
@@ -173,8 +200,7 @@ class UserInterface:
         if focus:
             entry.focus_set()
 
-    def __validate_entry_data(self) -> list[str]:
-        err_msg_list = []
+    def __validate_entry_data(self, err_msg_list=[]) -> list[str]:
         left_bound = self.n_left_bound.get()
         right_bound = self.n_right_bound.get()
         if left_bound > right_bound:
@@ -189,6 +215,7 @@ class UserInterface:
                 title="Recalculate Error", message="No dataset available to run calculations on. Run a simulation first.")
             return
         for idx, subset in enumerate(self.optimal_distance_from_center_superset):
+            left_bound = self.n_left_bound.get()
             n = self.left_bound + idx
             self.__calculate_and_display_stats(subset, n, n+2)
 
@@ -221,15 +248,31 @@ class UserInterface:
         err_msg_list = self.__validate_entry_data()
         self.program_timer.start()
         if len(err_msg_list) == 0:
+            self.__lock_metadata()
             self.__run_simulation_with_single_plot()
         else:
             err_block = '\n'.join(err_msg_list)
             messagebox.showwarning(title="Input data error", message=f"Error messages:\n\n" +
                                    f"{err_block}\n\nResolve input errors and press run.")
 
+    def __lock_metadata(self):
+        self.metadata = {
+            'n_left_bound': self.n_left_bound.get(),
+            'n_right_bound': self.n_right_bound.get(),
+            'sig_fig': self.sig_fig_var.get(),
+            'iterations': self.iteration_var.get(),
+            'repetitions': self.repetitions_var.get(),
+            'mean_decimal_places': self.mean_decimal_places.get(),
+            'stdev_decimal_places': self.stdev_decimal_places.get(),
+            'gmt-timestamp': time.gmtime()
+        }
+
     def __run_simulation_with_single_plot(self):
         self.optimal_distance_from_center_superset = self.__run_simulation_across_n_values()
         self.program_timer.report_step("Simulation Complete")
+        self.__plot_optimal_distances()
+
+    def __plot_optimal_distances(self):
         fig, ax = plt.subplots()
         self.left_bound = self.n_left_bound.get()
         for i, subset in enumerate(self.optimal_distance_from_center_superset):
@@ -244,6 +287,46 @@ class UserInterface:
         ax.legend()
         ax.xaxis.set_major_locator(MaxNLocator(integer=True))
         plt.show()
+
+    def __export_data(self, directory: str):
+        # Sanitize and validate the directory path
+        if not os.path.isdir(directory):
+            raise ValueError("Invalid directory path")
+
+        timestamp = time.strftime("%Y-%m-%d_%H%M%S")
+        unique_id = uuid.uuid4()
+        filename = f"simulation__{timestamp}__{unique_id}.json"
+        path = os.path.join(directory, filename)
+
+        data = {
+            'meta': self.metadata,
+            'dataset': self.optimal_distance_from_center_superset
+        }
+        json_data = json.dumps(data, indent=4)
+
+        with open(path, 'x') as f:
+            f.write(json_data)
+
+    def __import_data(self, path: str):
+        with open(path, 'r') as f:
+            data = json.load(f)
+            self.metadata = data.get('meta', {})
+            self.optimal_distance_from_center_superset = data.get(
+                'dataset', [])
+
+        self.__synchronize_panel_with_metadata()
+        self.__plot_optimal_distances()
+
+    def __synchronize_panel_with_metadata(self):
+        self.n_left_bound.set(self.metadata.get('n_left_bound', 1))
+        self.n_right_bound.set(self.metadata.get('n_right_bound', 1))
+        self.sig_fig_var.set(self.metadata.get('sig_fig', 3))
+        self.iteration_var.set(self.metadata.get('iterations', 1000))
+        self.repetitions_var.set(self.metadata.get('repetitions', 3))
+        self.mean_decimal_places.set(
+            self.metadata.get('mean_decimal_places', 2))
+        self.stdev_decimal_places.set(
+            self.metadata.get('stdev_decimal_places', 2))
 
     def __run_simulation_across_n_values(self):
         optimal_distance_from_center_superset = []
