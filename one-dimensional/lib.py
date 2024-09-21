@@ -87,7 +87,32 @@ class UserInterface:
         # Frames
         self.stats_frame = ttk.LabelFrame(self.root, text="Statistics")
         self.stats_frame.grid(row=7, column=0, columnspan=4,
-                              padx=10, pady=10, sticky='ew')
+                              padx=10, pady=10, sticky="ew")
+
+        # HR Seperator
+        separator = ttk.Separator(self.stats_frame, orient="horizontal")
+        separator.grid(row=3, column=0, columnspan=4, sticky="ew", pady=10)
+
+        # Canvas and Scrollbar
+        self.stats_canvas = tk.Canvas(self.stats_frame)
+        self.stats_scrollbar = ttk.Scrollbar(
+            self.stats_frame, orient="vertical", command=self.stats_canvas.yview)
+        self.stats_canvas.configure(yscrollcommand=self.stats_scrollbar.set)
+
+        # Create a frame inside the canvas
+        self.stats_inner_frame = ttk.Frame(self.stats_canvas)
+
+        # Add the frame to the canvas
+        self.stats_canvas.create_window(
+            (0, 0), window=self.stats_inner_frame, anchor="nw")
+
+        # Pack the canvas and scrollbar
+        self.stats_canvas.grid(row=4, column=0, sticky="nsew")
+        self.stats_scrollbar.grid(row=4, column=3, sticky="ns")
+
+        # Configure the inner frame to expand with the canvas
+        self.stats_inner_frame.bind("<Configure>", lambda e: self.stats_canvas.configure(
+            scrollregion=self.stats_canvas.bbox("all")))
 
         # Labels and entries
         self.__create_label_and_entry(
@@ -117,7 +142,7 @@ class UserInterface:
 
         self.recalculate_stats_button = ttk.Button(
             self.stats_frame, text="Recalculate", command=self.__calculate_stats_for_superset)
-        self.recalculate_stats_button.grid(row=0, column=2, padx=10, pady=10)
+        self.recalculate_stats_button.grid(row=2, column=0, padx=10, pady=10)
 
         self.program_timer.report_step("UI Setup")
 
@@ -167,14 +192,14 @@ class UserInterface:
         stdev = round(stdev, stdev_decimal_places)
 
         # Create labels for each n value
-        n_label = tk.Label(self.stats_frame, text=f"n={n_value} ")
+        n_label = tk.Label(self.stats_inner_frame, text=f"n={n_value} ")
         n_label.grid(row=row_idx, column=0, padx=10, pady=5)
 
-        mean_label = tk.Label(self.stats_frame,
+        mean_label = tk.Label(self.stats_inner_frame,
                               text=f"Mean: {mean}")
         mean_label.grid(row=row_idx, column=1, padx=10, pady=5)
 
-        stdev_label = tk.Label(self.stats_frame,
+        stdev_label = tk.Label(self.stats_inner_frame,
                                text=f"Std Dev: {stdev}")
         stdev_label.grid(row=row_idx, column=2, padx=10, pady=5)
 
