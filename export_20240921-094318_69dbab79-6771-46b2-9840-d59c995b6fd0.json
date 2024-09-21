@@ -1,0 +1,29 @@
+{
+    "meta": {
+        "n_left_bound": 1,
+        "n_right_bound": 1,
+        "sig_fig": 3,
+        "iterations": 1000,
+        "repetitions": 3,
+        "mean_decimal_places": 2,
+        "stdev_decimal_places": 2,
+        "gmt-timestamp": [
+            2024,
+            9,
+            21,
+            13,
+            43,
+            17,
+            5,
+            265,
+            0
+        ]
+    },
+    "dataset": [
+        [
+            0.0039999999999998925,
+            0.011999999999999789,
+            0.09899999999999576
+        ]
+    ]
+}

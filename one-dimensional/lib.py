@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 import time
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 import statistics
 from placement_optimization_sim import NumberLine
 
@@ -177,7 +177,12 @@ class UserInterface:
                 title="Export Failed", message="Metadata or dataset missing or corrupted, run or import a simulation before exporting data.")
 
     def try_import(self):
-        pass
+        file_path = filedialog.askopenfilename(
+            title="Select file",
+            filetypes=(("JSON files", "*.json"), ("All files", "*.*"))
+        )
+        if file_path:
+            self.__import_data(file_path)
 
     def __create_label_and_entry(self, text, variable, row, col, scale_to=None, master=None, width=None, focus=False):
         m = master or self.root
@@ -210,6 +215,7 @@ class UserInterface:
                 title="Recalculate Error", message="No dataset available to run calculations on. Run a simulation first.")
             return
         for idx, subset in enumerate(self.optimal_distance_from_center_superset):
+            left_bound = self.n_left_bound.get()
             n = self.left_bound + idx
             self.__calculate_and_display_stats(subset, n, n+2)
 
@@ -304,11 +310,12 @@ class UserInterface:
     def __import_data(self, path: str):
         with open(path, 'r') as f:
             data = json.load(f)
-
-        self.metadata = data.get('meta', {})
-        self.optimal_distance_from_center_superset = data.get('dataset', [])
+            self.metadata = data.get('meta', {})
+            self.optimal_distance_from_center_superset = data.get(
+                'dataset', [])
 
         self.__synchronize_panel_with_metadata()
+        self.__plot_optimal_distances()
 
     def __synchronize_panel_with_metadata(self):
         self.n_left_bound.set(self.metadata.get('n_left_bound', 1))
