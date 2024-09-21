@@ -140,7 +140,15 @@ class UserInterface:
 
         self.quit_button = ttk.Button(
             self.root, text="Quit", command=self.quit_app)
-        self.quit_button.grid(row=5, column=2, padx=10, pady=10)
+        self.quit_button.grid(row=5, column=4, padx=10, pady=10)
+
+        self.export_button = ttk.Button(
+            self.root, text="Export Run", command=self.try_export)
+        self.export_button.grid(row=5, column=2, padx=10, pady=10)
+
+        self.import_button = ttk.Button(
+            self.root, text="Import Run", command=self.try_import)
+        self.import_button.grid(row=5, column=3, padx=10, pady=10)
 
         self.progress_bar = ProgressBar(self.root, bar_row=6, label_row=6)
 
@@ -160,6 +168,16 @@ class UserInterface:
 
     def __on_enter_key(self, event):
         self.__try_run_simulation_with_single_plot()
+
+    def try_export(self):
+        if self.metadata and self.optimal_distance_from_center_superset:
+            self.__export_data(".")
+        else:
+            messagebox.showwarning(
+                title="Export Failed", message="Metadata or dataset missing or corrupted, run or import a simulation before exporting data.")
+
+    def try_import(self):
+        pass
 
     def __create_label_and_entry(self, text, variable, row, col, scale_to=None, master=None, width=None, focus=False):
         m = master or self.root
@@ -269,19 +287,19 @@ class UserInterface:
         if not os.path.isdir(directory):
             raise ValueError("Invalid directory path")
 
-        # Generate a safe filename using a timestamp and UUID
         timestamp = time.strftime("%Y%m%d-%H%M%S")
         unique_id = uuid.uuid4()
         filename = f"export_{timestamp}_{unique_id}.json"
-
-        # Construct the full file path safely
         path = os.path.join(directory, filename)
 
         data = {
-            'meta': self.meta,
+            'meta': self.metadata,
             'dataset': self.optimal_distance_from_center_superset
         }
         json_data = json.dumps(data, indent=4)
+
+        with open(path, 'x') as f:
+            f.write(json_data)
 
     def __import_data(self, path: str):
         with open(path, 'r') as f:
