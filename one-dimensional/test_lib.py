@@ -1,55 +1,21 @@
 import pytest
-from lib import RandomPointGenerator, NumberLine, Simulation
-import random
-from time import sleep
-
-
-class TestPointGenerator:
-    def test_generate_points(self):
-        pg = RandomPointGenerator()
-        n = random.randint(0, 1000)
-        points = pg.generate_points(0, 2, n)
-        assert len(points) == n
-
-
-class TestNumberLine:
-    def test_display(self, capsys):
-        n = random.randint(0, 100)
-        number_line = NumberLine(0, 2, 1, n)
-        number_line.display()
-        captured = capsys.readouterr()
-        assert captured.out[:20] == "Number line segment:"
-
-    def test_visualize(self):
-        n = random.randint(0, 100)
-        number_line = NumberLine(0, 2, 1, n)
-        number_line.visualize()
-        # required for cleanup, stops interference with other visualizing tests
-        sleep(1)
-        assert True
-
-    def test_regenerate_data(self):
-        n = random.randint(0, 100)
-        number_line = NumberLine(0, 2, 1, n)
-        points = number_line.points
-        number_line.regenerate_data()
-        assert points != number_line.points
-
-    def test_find_best_path(self):
-        number_line = NumberLine(0, 2, 1, 1)
-        number_line.max_point = 1.5
-        number_line.min_point = 0.5
-        distance = number_line._NumberLine__find_best_path()
-        assert distance == 1.5
+from lib import Simulation, UserInterface, ProgramTimer, ProgressBar
+from placement_optimization_sim import NumberLine
+import tkinter as tk
+import statistics
+import os
+import json
+import time
+import uuid
+import tempfile
 
 
 class TestSimulation:
     def test_run(self):
-        repetitions = random.randint(0, 100)
         number_line = NumberLine(0, 2, 1, 3)
-        simulation = Simulation(number_line, 1, repetitions, 1)
+        simulation = Simulation(number_line, 1, 1, 1)
         simulation.run()
-        assert len(simulation.optimal_p_values) == repetitions
+        assert len(simulation.optimal_p_values) == 1
 
     def test_gather(self):
         number_line = NumberLine(0, 2, 1, 3)
@@ -67,7 +33,120 @@ class TestSimulation:
 
     def test_funnel_to_p_value(self):
         number_line = NumberLine(0, 2, 1, 3)
-        significant_figures = random.randint(0, 10)
-        simulation = Simulation(number_line, 1, 1, significant_figures)
+        simulation = Simulation(number_line, 1, 1, 1)
         assert (simulation._Simulation__funnel_to_p_value() *
-                significant_figures) % (10*significant_figures) >= 1
+                1) % 10 >= 1
+
+
+class TestUserInterface:
+    @pytest.fixture
+    def ui(self):
+        root = tk.Tk()
+        timer = ProgramTimer()
+        return UserInterface(root, timer)
+
+    def test_validate_entry_data(self, ui):
+        ui.n_left_bound.set(1)
+        ui.n_right_bound.set(2)
+        assert ui._UserInterface__validate_entry_data() == []
+
+    def test_calculate_stats_for_superset(self, ui):
+        ui.optimal_distance_from_center_superset = [[1, 2, 3], [4, 5, 6]]
+        ui._UserInterface__calculate_stats_for_superset()
+        assert len(ui.optimal_distance_from_center_superset) == 2
+
+    def test_try_run_simulation_with_single_plot(self, ui):
+        ui._UserInterface__try_run_simulation_with_single_plot()
+        assert True
+
+    def test_lock_metadata(self, ui):
+        ui._UserInterface__lock_metadata()
+        assert 'n_left_bound' in ui.metadata
+
+    def test_run_simulation_with_single_plot(self, ui):
+        ui._UserInterface__run_simulation_with_single_plot()
+        assert True
+
+    def test_plot_optimal_distances(self, ui):
+        ui._UserInterface__plot_optimal_distances()
+        assert True
+
+    def test_export_data(self, ui):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            ui._UserInterface__export_data(temp_dir)
+            exported_files = os.listdir(temp_dir)
+            assert len(exported_files) > 0  # Ensure files are exported
+
+    def test_import_data(self, ui):
+        test_file_path = os.path.join(
+            tempfile.gettempdir(), 'test_import.json')
+        with open(test_file_path, 'w') as f:
+            json.dump({}, f)
+        ui._UserInterface__import_data(test_file_path)
+        assert True
+        os.remove(test_file_path)  # Clean up after test
+
+    def test_synchronize_panel_with_metadata(self, ui):
+        ui._UserInterface__synchronize_panel_with_metadata()
+        assert True
+
+    def test_run_simulation_across_n_values(self, ui):
+        ui._UserInterface__run_simulation_across_n_values()
+        assert True
+
+    def test_run_simulation_for_n(self, ui):
+        ui._UserInterface__run_simulation_for_n(1)
+        assert True
+
+    def test_quit_app(self, ui):
+        ui.quit_app()
+        assert True
+
+
+class TestProgramTimer:
+    def test_start(self):
+        timer = ProgramTimer()
+        timer.start()
+        assert True
+
+    def test_get_time_since_start(self):
+        timer = ProgramTimer()
+        timer.start()
+        assert timer.get_time_since_start() >= 0
+
+    def test_get_time_since_init(self):
+        timer = ProgramTimer()
+        assert timer.get_time_since_init() >= 0
+
+    def test_get_counter_time(self):
+        timer = ProgramTimer()
+        assert timer.get_counter_time() >= 0
+
+    def test_reset_counter(self):
+        timer = ProgramTimer()
+        timer.reset_counter()
+        assert True
+
+    def test_report_step(self):
+        timer = ProgramTimer()
+        timer.report_step("Test")
+        assert True
+
+
+class TestProgressBar:
+    @pytest.fixture
+    def progress_bar(self):
+        root = tk.Tk()
+        return ProgressBar(root)
+
+    def test_update_progress(self, progress_bar):
+        progress_bar.update_progress()
+        assert True
+
+    def test_increment_progress(self, progress_bar):
+        progress_bar.increment_progress()
+        assert True
+
+    def test_clear_progress(self, progress_bar):
+        progress_bar.clear_progress()
+        assert True

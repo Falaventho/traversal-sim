@@ -24,7 +24,11 @@ class Simulation:
         for _ in range(self.repetitions):
             p_val = self.__funnel_to_p_value()
             self.optimal_p_values.append(p_val)
-            self.progress_callback()
+            if self.progress_callback:
+                self.progress_callback()
+
+    def noprogress(self):
+        pass
 
     def __gather(self):
         dataset = []
@@ -216,7 +220,7 @@ class UserInterface:
             return
         for idx, subset in enumerate(self.optimal_distance_from_center_superset):
             left_bound = self.n_left_bound.get()
-            n = self.left_bound + idx
+            n = left_bound + idx
             self.__calculate_and_display_stats(subset, n, n+2)
 
     def __calculate_and_display_stats(self, subset, n_value, row_idx):
@@ -380,7 +384,7 @@ class ProgramTimer:
         return time.time() - self.init_time
 
     def get_counter_time(self):
-        return time.tim() - self.counter
+        return time.time() - self.counter
 
     def reset_counter(self, step=None):
         print(f"Counter reset on {step}")
