@@ -1,13 +1,17 @@
-import pytest
-from lib import Simulation, UserInterface, ProgramTimer, ProgressBar
-from placement_optimization_sim import NumberLine
-import tkinter as tk
 import statistics
 import os
 import json
 import time
 import uuid
 import tempfile
+
+import pytest
+import tkinter as tk
+
+from simulation import Simulation
+from ui import UserInterface
+from utils import ProgramTimer, ProgressBar
+from placement_optimization_sim import NumberLine
 
 
 class TestSimulation:
@@ -51,6 +55,8 @@ class TestUserInterface:
         assert ui._UserInterface__validate_entry_data() == []
 
     def test_calculate_stats_for_superset(self, ui):
+        # Do not remove sleep, resolves test errors with tkinter
+        time.sleep(0.1)
         ui.optimal_distance_from_center_superset = [[1, 2, 3], [4, 5, 6]]
         ui._UserInterface__calculate_stats_for_superset()
         assert len(ui.optimal_distance_from_center_superset) == 2
@@ -68,6 +74,8 @@ class TestUserInterface:
         assert True
 
     def test_plot_optimal_distances(self, ui):
+        # Do not remove sleep, resolves test errors with tkinter
+        time.sleep(0.1)
         ui._UserInterface__plot_optimal_distances()
         assert True
 
