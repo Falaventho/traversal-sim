@@ -310,6 +310,8 @@ class UserInterface:
 
         with open(path, 'x') as f:
             f.write(json_data)
+            messagebox.showinfo(title="Export completed",
+                                message=f"Exported as:\n{filename}.")
 
     def __import_data(self, path: str):
         with open(path, 'r') as f:
