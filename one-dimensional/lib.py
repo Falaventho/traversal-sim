@@ -171,7 +171,7 @@ class UserInterface:
 
     def try_export(self):
         if self.metadata and self.optimal_distance_from_center_superset:
-            self.__export_data(".")
+            self.__export_data("./exports")
         else:
             messagebox.showwarning(
                 title="Export Failed", message="Metadata or dataset missing or corrupted, run or import a simulation before exporting data.")
@@ -293,9 +293,9 @@ class UserInterface:
         if not os.path.isdir(directory):
             raise ValueError("Invalid directory path")
 
-        timestamp = time.strftime("%Y%m%d-%H%M%S")
+        timestamp = time.strftime("%Y-%m-%d_%H%M%S")
         unique_id = uuid.uuid4()
-        filename = f"export_{timestamp}_{unique_id}.json"
+        filename = f"simulation__{timestamp}__{unique_id}.json"
         path = os.path.join(directory, filename)
 
         data = {
