@@ -116,7 +116,7 @@ class UserInterface:
 
         # Labels and entries
         self.__create_label_and_entry(
-            "n-values from:", self.n_left_bound, 0, 0)
+            "n-values from:", self.n_left_bound, 0, 0, focus=True)
         self.__create_label_and_entry("to", self.n_right_bound, 0, 2)
         self.__create_label_and_entry(
             "Significant Figures", self.sig_fig_var, 2, 0, 10)
@@ -146,7 +146,18 @@ class UserInterface:
 
         self.program_timer.report_step("UI Setup")
 
-    def __create_label_and_entry(self, text, variable, row, col, scale_to=None, master=None, width=None):
+        # Bindings
+        self.stats_canvas.bind_all("<MouseWheel>", self.__on_mousewheel)
+
+        self.root.bind("<Return>", self.__on_enter_key)
+
+    def __on_mousewheel(self, event):
+        self.stats_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+
+    def __on_enter_key(self, event):
+        self.__try_run_simulation_with_single_plot()
+
+    def __create_label_and_entry(self, text, variable, row, col, scale_to=None, master=None, width=None, focus=False):
         m = master or self.root
         w = width or 20
 
@@ -158,6 +169,9 @@ class UserInterface:
             slider = ttk.Scale(m, from_=1, to=scale_to, orient='horizontal',
                                variable=variable, command=lambda val: variable.set(int(float(val))))
             slider.grid(row=row, column=col + 2, padx=10, pady=5)
+
+        if focus:
+            entry.focus_set()
 
     def __validate_entry_data(self) -> list[str]:
         err_msg_list = []
