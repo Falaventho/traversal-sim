@@ -101,7 +101,7 @@ class UserInterface:
         self.progress_bar = ProgressBar(self.root, bar_row=6, label_row=6)
 
         self.quit_button = ttk.Button(
-            self.root, text="Quit", command=self.quit_app)
+            self.root, text="Quit", command=self._quit_app)
         self.quit_button.grid(row=5, column=4, padx=10, pady=10)
 
         self.recalculate_stats_button = ttk.Button(
@@ -322,5 +322,5 @@ class UserInterface:
                                  for x in simulation.optimal_p_values]
         return distances_from_center
 
-    def quit_app(self):
+    def _quit_app(self):
         self.root.quit()
