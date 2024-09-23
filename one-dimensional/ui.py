@@ -13,6 +13,9 @@ from placement_optimization_sim import NumberLine
 from utils import ProgressBar
 from simulation import Simulation
 
+# Inversely affects scroll speed.
+SCROLL_SCALAR = 120
+
 
 class UserInterface:
     def __init__(self, root, program_timer):
@@ -116,7 +119,8 @@ class UserInterface:
         self.root.bind("<Return>", self._on_enter_key)
 
     def _on_mousewheel(self, event):
-        self.stats_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        self.stats_canvas.yview_scroll(
+            int(-1*(event.delta/SCROLL_SCALAR)), "units")
 
     def _on_enter_key(self, event):
         self._try_run_simulation_with_single_plot()
