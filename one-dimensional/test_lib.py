@@ -106,7 +106,7 @@ class TestUserInterface:
         assert True
 
     def test_quit_app(self, ui):
-        ui.quit_app()
+        ui._quit_app()
         assert True
 
 
