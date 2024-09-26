@@ -28,7 +28,7 @@ class Simulation:
         left_bound = float(self.number_line.get_starting_position())
         right_bound = float(self.number_line.get_end())
         step = 1
-        # ! Space for data structure improvement here, lists are not the best
+        # ! Space for data structure improvement here, lists may not be best
         traversal_distances = []
         tested_p_values = []
 
