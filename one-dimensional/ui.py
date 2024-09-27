@@ -149,15 +149,15 @@ class UserInterface:
                 title="Replot Failed", message="Cannot replot data that has not been generated. Run a simulation first.")
 
     def _create_label_and_entry(self, text, variable, row, col, scale_to=None, master=None, width=None, focus=False):
-        m = master or self.root
-        w = width or 20
+        root = master or self.root
+        entry_width = width or 20
 
-        label = ttk.Label(m, text=text)
+        label = ttk.Label(root, text=text)
         label.grid(row=row, column=col, padx=10, pady=5)
-        entry = ttk.Entry(m, textvariable=variable, width=w)
+        entry = ttk.Entry(root, textvariable=variable, width=entry_width)
         entry.grid(row=row, column=col + 1, padx=10, pady=5)
         if scale_to:
-            slider = ttk.Scale(m, from_=1, to=scale_to, orient='horizontal',
+            slider = ttk.Scale(root, from_=1, to=scale_to, orient='horizontal',
                                variable=variable, command=lambda val: variable.set(int(float(val))))
             slider.grid(row=row, column=col + 2, padx=10, pady=5)
 
