@@ -72,13 +72,13 @@ def generate_start_set():
 
     points = [Point(gen_x, gen_y, 0)]
 
-    for y_offset in range(5):
+    for y_offset in range(6):
         y_offset = float(y_offset) / 10
         gen_y = 0.5 + y_offset
 
-        for x_offset in range(5):
+        for x_offset in range(6):
             x_offset = float(x_offset) / 10
-            if x_offset >= y_offset:
+            if x_offset > y_offset:
                 break
             gen_x = 0.5 + x_offset
             new_point = Point(gen_x, gen_y, 0)
@@ -89,36 +89,41 @@ def generate_start_set():
 
 def main():
     starting_point_set = generate_start_set()
-    num_points = int(input("How many points: "))
+    left = int(input("Enter left bound of n-values: "))
+    right = int(input("Enter right bound of n-values: ")) + 1
+    point_range = range(left, right)
     iterations = int(input("How many iterations: "))
-    min_distances = []
-    min_permutations = []
-    min_start = []
 
-    for starting_point in starting_point_set:
+    for num_points in point_range:
 
-        distances = []
-        permutations = []
+        min_distances = []
+        min_permutations = []
+        min_start = []
 
-        for i in range(iterations):
-            dist, perm = gather(starting_point, num_points)
-            distances.append(dist)
-            permutations.append(perm)
+        for starting_point in starting_point_set:
 
-        min_distance = min(distances)
-        min_permutation = permutations[distances.index(min_distance)]
-        min_distances.append(min_distance)
-        min_permutations.append(min_permutation)
-        min_start.append(starting_point)
+            distances = []
+            permutations = []
 
-    true_min_distance = min(min_distances)
-    true_min_index = min_distances.index(true_min_distance)
-    true_min_start = min_start[true_min_index]
-    print(f"True minimum distance: {true_min_distance}")
-    print(f"True minimum starting point: (" +
-          f"{true_min_start.x}, {true_min_start.y})")
-    print("Average minimum distance: " +
-          f"{sum(min_distances) / len(min_distances)}")
+            for i in range(iterations):
+                dist, perm = gather(starting_point, num_points)
+                distances.append(dist)
+                permutations.append(perm)
+
+            min_distance = min(distances)
+            min_permutation = permutations[distances.index(min_distance)]
+            min_distances.append(min_distance)
+            min_permutations.append(min_permutation)
+            min_start.append(starting_point)
+
+        true_min_distance = min(min_distances)
+        true_min_index = min_distances.index(true_min_distance)
+        true_min_start = min_start[true_min_index]
+        print(f"True minimum distance for n={num_points}: {true_min_distance}")
+        print(f"True minimum starting point for n={num_points}: (" +
+              f"{true_min_start.x}, {true_min_start.y})")
+        print(f"Average minimum distance for n={num_points}: " +
+              f"{sum(min_distances) / len(min_distances)}")
 
 
 if __name__ == "__main__":
