@@ -10,11 +10,19 @@ There is a square 2d plane on which n randomly located points will be placed. Be
 
 Define the problem in 1d space, solve the 1d problem, then apply the solution to the 2d space and test for a true or near-true solution.
 
+
 ## The One-Dimensional Problem
 
 There is a line segment of length 2 (spanning -1 to 1 inclusive) on which n points will be randomly placed with uniform probability. Before the points are slected, choose a starting point P that will minimize the travel distance required to contact all points.
 
-## The One-Dimensional Assumptions
+<details>
+<summary>
+More on the one-dimensional problem
+</summary>
+
+<br/>
+
+### The One-Dimensional Assumptions
 
 At n = 1, the center of the line segment (P = 0) is the optimal solution.
 
@@ -24,28 +32,21 @@ As n increases, the optimal solutions are found closer and closer to the ends of
 
 As n approaches infinity, the optimal solutions are found at the ends of the line segment (P = -1 or P = 1).
 
-## Initial Findings
+<br/>
 
-Simulations of n-values from 1-10 generated the following distance-from-center results across a 100,000 iteration-per-step test on a 0.001 width interval step.
-![1-10plt](https://github.com/user-attachments/assets/aa4ab966-db75-4401-bd66-9d3c8a5e5bb7)
+### One-Dimensional Findings
 
-Below is the same graph with log<sub>10</sub>(x-1) in orange and log<sub>e</sub>(x-1) in black
+Simulations of n-values from 1-10 generated the following distance-from-center (d) results across a 100,000 iteration-per-step test on a 0.001 width interval step. Each n-value simulation was repeated 10 times, to assist in analyzing the program's precision.
 
-![1-10plt-log-loge](https://github.com/user-attachments/assets/f26341d9-698d-4b41-a0be-3e5b35c1413e)
+![1-10plt-5-100k-10](https://github.com/user-attachments/assets/c7d45f31-ab1d-4bcd-95eb-dca30071a3f8)
 
-### Numerical Findings
+Associated mean and standard deviation for each n-value in sample above.
 
-A cursory examination of n&nbsp;=&nbsp;100 held true the limit hypothesis with a 100,000 iteration-per-step test on a 0.001 width interval step showing P&nbsp;=&nbsp;1.985 on a segment spanning -1 to 1. From this, a 0.985 distance-from-center value can be extracted.
+![1-10stats-5-100k-10-5-5](https://github.com/user-attachments/assets/91fd9519-0509-4d98-9c21-c7989219ceb5)
 
-Below, the distance from center D for optimal traversal distance for n points on a line segment spanning -1 to 1 inclusive where 1<=n<=10:
+<br/>
 
-n = 1, D = 0.000<br>
-n = 2, D = 0.000<br>
-n = 3, D = 0.515<br>
-n = 4, D = 0.660<br>
-n = 5, D = 0.727<br>
-n = 6, D = 0.776<br>
-n = 7, D = 0.800<br>
-n = 8, D = 0.827<br>
-n = 9, D = 0.847<br>
-n = 10, D = 0.863
+### One-Dimensional Analysis
+
+The one-dimensional simulation produces expected results, with the relatively large standard deviation for n=2 effectively explaining the apparent drift from d=0. There may be an effective description of this curve in the form  $1-\frac{a}{bx-1}$  for  $x\ge2$.
+</details>
