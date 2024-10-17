@@ -128,24 +128,19 @@ class MainApp:
                 average_distances.append(avg_dist)
                 min_start.append(starting_point)
 
-            sorted_distances = sorted(average_distances)
-            sorted_starts = [x for _, x in sorted(
-                zip(average_distances, min_start))]
-
-            sorted_distances.reverse()
-            sorted_starts.reverse()
+            zipped_dataset = zip(average_distances, min_start)
+            sorted_dataset = [(d, p) for d, p in sorted(zipped_dataset)]
+            sorted_dataset.reverse()
 
             print(f"n={num_points}")
             reference_point = Point(0.5, 0.5)
-            for dist in sorted_distances:
-                idx = average_distances.index(dist)
-                associated_point = sorted_starts[idx]
+            for d, p in sorted_dataset:
                 dist_from_center = DistanceCalculator.calc_dist(
-                    associated_point, reference_point)
+                    p, reference_point)
 
                 print(f"Starting point: " +
-                      f"({associated_point.x:.2f}, {associated_point.y:.2f}) (Distance from center: {dist_from_center:.5f}) - " +
-                      f"Average traversal distance: {dist:.3f}")
+                      f"({p.x:.2f}, {p.y:.2f}) (Distance from center: {dist_from_center:.5f}) - " +
+                      f"Average traversal distance: {d:.3f}")
 
 
 if __name__ == "__main__":
