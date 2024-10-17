@@ -1,24 +1,24 @@
 import itertools
 import random
 import math
+import statistics
 from typing import List, Tuple, Dict
 
 
 class Point:
-    def __init__(self, x: float, y: float, id_num: int):
+    def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
-        self.id_num = id_num
 
 
 class PointGenerator:
     @staticmethod
     def generate_points(starting_point: Point, num_points: int) -> List[Point]:
         points = [starting_point]
-        for i in range(num_points):
+        for _ in range(num_points):
             rand_x = random.uniform(0, 1)
             rand_y = random.uniform(0, 1)
-            new_point = Point(rand_x, rand_y, i)
+            new_point = Point(rand_x, rand_y)
             points.append(new_point)
         return points
 
@@ -31,8 +31,19 @@ class PointGenerator:
             for x_offset in range(6):
                 x_offset = float(x_offset) / 10
                 gen_x = 0.5 + x_offset
-                new_point = Point(gen_x, gen_y, 0)
+                new_point = Point(gen_x, gen_y)
                 points.append(new_point)
+        return points
+
+    @staticmethod
+    def generate_xy_start_set() -> List[Point]:
+        points = []
+        for offset in range(51):
+            offset = float(offset) / 100
+            xy = round(0.5 + offset, 2)
+            new_point = Point(xy, xy)
+            points.append(new_point)
+
         return points
 
 
@@ -94,15 +105,14 @@ class Gatherer:
 class MainApp:
     @staticmethod
     def main():
-        starting_point_set = PointGenerator.generate_start_set()
+        starting_point_set = PointGenerator.generate_xy_start_set()
         left = int(input("Enter left bound of n-values: "))
         right = int(input("Enter right bound of n-values: ")) + 1
         point_range = range(left, right)
         iterations = int(input("How many iterations: "))
 
         for num_points in point_range:
-            min_distances = []
-            min_permutations = []
+            average_distances = []
             min_start = []
 
             for starting_point in starting_point_set:
@@ -114,21 +124,28 @@ class MainApp:
                     distances.append(dist)
                     permutations.append(perm)
 
-                min_distance = min(distances)
-                min_permutation = permutations[distances.index(min_distance)]
-                min_distances.append(min_distance)
-                min_permutations.append(min_permutation)
+                avg_dist = statistics.mean(distances)
+                average_distances.append(avg_dist)
                 min_start.append(starting_point)
 
-            true_min_distance = min(min_distances)
-            true_min_index = min_distances.index(true_min_distance)
-            true_min_start = min_start[true_min_index]
-            print(f"True minimum distance for n=" +
-                  f"{num_points}: {true_min_distance}")
-            print(f"True minimum starting point for n=" +
-                  f"{num_points}: ({true_min_start.x}, {true_min_start.y})")
-            print(f"Average minimum distance for n={num_points}: " +
-                  f"{sum(min_distances) / len(min_distances)}")
+            sorted_distances = sorted(average_distances)
+            sorted_starts = [x for _, x in sorted(
+                zip(average_distances, min_start))]
+
+            sorted_distances.reverse()
+            sorted_starts.reverse()
+
+            print(f"n={num_points}")
+            reference_point = Point(0.5, 0.5)
+            for dist in sorted_distances:
+                idx = average_distances.index(dist)
+                associated_point = sorted_starts[idx]
+                dist_from_center = DistanceCalculator.calc_dist(
+                    associated_point, reference_point)
+
+                print(f"Starting point: " +
+                      f"({associated_point.x:.2f}, {associated_point.y:.2f}) (Distance from center: {dist_from_center:.5f}) - " +
+                      f"Average traversal distance: {dist:.3f}")
 
 
 if __name__ == "__main__":
