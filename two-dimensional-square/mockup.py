@@ -2,6 +2,10 @@ import itertools
 import random
 import math
 import statistics
+import matplotlib.pyplot as plt
+import numpy as np
+
+
 from typing import List, Tuple, Dict
 
 
@@ -25,11 +29,11 @@ class PointGenerator:
     @staticmethod
     def generate_start_set() -> List[Point]:
         points = []
-        for y_offset in range(6):
-            y_offset = float(y_offset) / 10
+        for y_offset in range(51):
+            y_offset = float(y_offset) / 100
             gen_y = 0.5 + y_offset
-            for x_offset in range(6):
-                x_offset = float(x_offset) / 10
+            for x_offset in range(51):
+                x_offset = float(x_offset) / 100
                 gen_x = 0.5 + x_offset
                 new_point = Point(gen_x, gen_y)
                 points.append(new_point)
@@ -105,7 +109,7 @@ class Gatherer:
 class MainApp:
     @staticmethod
     def main():
-        starting_point_set = PointGenerator.generate_xy_start_set()
+        starting_point_set = PointGenerator.generate_start_set()
         left = int(input("Enter left bound of n-values: "))
         right = int(input("Enter right bound of n-values: ")) + 1
         point_range = range(left, right)
@@ -134,6 +138,7 @@ class MainApp:
 
             print(f"n={num_points}")
             reference_point = Point(0.5, 0.5)
+            set_3d = []
             for d, p in sorted_dataset:
                 dist_from_center = DistanceCalculator.calc_dist(
                     p, reference_point)
@@ -141,6 +146,27 @@ class MainApp:
                 print(f"Starting point: " +
                       f"({p.x:.2f}, {p.y:.2f}) (Distance from center: {dist_from_center:.5f}) - " +
                       f"Average traversal distance: {d:.3f}")
+
+                set_3d.append((p.x, p.y, d))
+
+            X, Y, Z = [], [], []
+            for x, y, z in set_3d:
+                X.append(x)
+                Y.append(y)
+                Z.append(z)
+
+            X = np.array(X)
+            Y = np.array(Y)
+            Z = np.array(Z)
+
+            fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+            scatter = ax.scatter(
+                X, Y, Z, c=Z, cmap='coolwarm')
+
+            ax.view_init(elev=90, azim=0)
+            fig.colorbar(scatter)
+
+            plt.show()
 
 
 if __name__ == "__main__":
