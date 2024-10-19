@@ -1,4 +1,3 @@
-import statistics
 import os
 import json
 import time
@@ -61,6 +60,7 @@ class TestUserInterface:
         assert len(ui.optimal_distance_from_center_superset) == 2
 
     def test_try_run_simulation_with_single_plot(self, ui):
+        time.sleep(0.1)
         ui._try_run_simulation_with_single_plot()
         assert True
 
