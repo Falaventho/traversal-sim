@@ -1,13 +1,15 @@
-import pytest
-from lib import Simulation, UserInterface, ProgramTimer, ProgressBar
-from placement_optimization_sim import NumberLine
-import tkinter as tk
-import statistics
 import os
 import json
 import time
-import uuid
 import tempfile
+
+import pytest
+import tkinter as tk
+
+from simulation import Simulation
+from ui import UserInterface
+from utils import ProgramTimer, ProgressBar
+from placement_optimization_sim import NumberLine
 
 
 class TestSimulation:
@@ -20,7 +22,7 @@ class TestSimulation:
     def test_gather(self):
         number_line = NumberLine(0, 2, 1, 3)
         simulation = Simulation(number_line, 1, 1, 1)
-        traversal = simulation._Simulation__gather()
+        traversal = simulation._gather()
         assert 0 <= traversal <= 3
 
     def test_find_optimal_p(self):
@@ -28,13 +30,13 @@ class TestSimulation:
         simulation = Simulation(number_line, 1, 1, 1)
         traversal_distances = [0, 1, 2, 3, 4]
         tested_p_values = [0, 1, 2, 3, 4]
-        assert simulation._Simulation__find_optimal_p(
+        assert simulation._find_optimal_p(
             traversal_distances, tested_p_values) == 0
 
     def test_funnel_to_p_value(self):
         number_line = NumberLine(0, 2, 1, 3)
         simulation = Simulation(number_line, 1, 1, 1)
-        assert (simulation._Simulation__funnel_to_p_value() *
+        assert (simulation._funnel_to_p_value() *
                 1) % 10 >= 1
 
 
@@ -48,32 +50,37 @@ class TestUserInterface:
     def test_validate_entry_data(self, ui):
         ui.n_left_bound.set(1)
         ui.n_right_bound.set(2)
-        assert ui._UserInterface__validate_entry_data() == []
+        assert ui._validate_entry_data() == []
 
     def test_calculate_stats_for_superset(self, ui):
+        # Do not remove sleep, resolves test errors with tkinter
+        time.sleep(0.1)
         ui.optimal_distance_from_center_superset = [[1, 2, 3], [4, 5, 6]]
-        ui._UserInterface__calculate_stats_for_superset()
+        ui._calculate_stats_for_superset()
         assert len(ui.optimal_distance_from_center_superset) == 2
 
     def test_try_run_simulation_with_single_plot(self, ui):
-        ui._UserInterface__try_run_simulation_with_single_plot()
+        time.sleep(0.1)
+        ui._try_run_simulation_with_single_plot()
         assert True
 
     def test_lock_metadata(self, ui):
-        ui._UserInterface__lock_metadata()
+        ui._lock_metadata()
         assert 'n_left_bound' in ui.metadata
 
     def test_run_simulation_with_single_plot(self, ui):
-        ui._UserInterface__run_simulation_with_single_plot()
+        ui._run_simulation_with_single_plot()
         assert True
 
     def test_plot_optimal_distances(self, ui):
-        ui._UserInterface__plot_optimal_distances()
+        # Do not remove sleep, resolves test errors with tkinter
+        time.sleep(0.1)
+        ui._plot_optimal_distances()
         assert True
 
     def test_export_data(self, ui):
         with tempfile.TemporaryDirectory() as temp_dir:
-            ui._UserInterface__export_data(temp_dir)
+            ui._export_data(temp_dir)
             exported_files = os.listdir(temp_dir)
             assert len(exported_files) > 0  # Ensure files are exported
 
@@ -82,24 +89,24 @@ class TestUserInterface:
             tempfile.gettempdir(), 'test_import.json')
         with open(test_file_path, 'w') as f:
             json.dump({}, f)
-        ui._UserInterface__import_data(test_file_path)
+        ui._import_data(test_file_path)
         assert True
         os.remove(test_file_path)  # Clean up after test
 
     def test_synchronize_panel_with_metadata(self, ui):
-        ui._UserInterface__synchronize_panel_with_metadata()
+        ui._synchronize_panel_with_metadata()
         assert True
 
     def test_run_simulation_across_n_values(self, ui):
-        ui._UserInterface__run_simulation_across_n_values()
+        ui._run_simulation_across_n_values()
         assert True
 
     def test_run_simulation_for_n(self, ui):
-        ui._UserInterface__run_simulation_for_n(1)
+        ui._run_simulation_for_n(1)
         assert True
 
     def test_quit_app(self, ui):
-        ui.quit_app()
+        ui._quit_app()
         assert True
 
 
