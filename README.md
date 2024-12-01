@@ -1,6 +1,6 @@
 # Placement Optimization Simulator
 
-This is a small project built to assist in the analysis of an optimization problem in 2d space.
+This is a python utility built to assist in the analysis of an optimization problem in 2d space.
 
 ## The Problem
 
