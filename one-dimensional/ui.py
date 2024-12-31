@@ -190,10 +190,12 @@ class UserInterface:
 
         # Calculate statistics
         mean = statistics.mean(subset)
+        median = statistics.median(subset)
         stdev = statistics.stdev(subset)
 
         # Round statistics to user-specified precision
         mean = round(mean, mean_decimal_places)
+        median = round(median, mean_decimal_places)
         stdev = round(stdev, stdev_decimal_places)
 
         # Create labels for each n value
@@ -204,9 +206,13 @@ class UserInterface:
                               text=f"Mean: {mean}")
         mean_label.grid(row=row_idx, column=1, padx=10, pady=5)
 
+        media_label = tk.Label(self.stats_inner_frame,
+                               text=f"Median: {median}")
+        media_label.grid(row=row_idx, column=2, padx=10, pady=5)
+
         stdev_label = tk.Label(self.stats_inner_frame,
                                text=f"Std Dev: {stdev}")
-        stdev_label.grid(row=row_idx, column=2, padx=10, pady=5)
+        stdev_label.grid(row=row_idx, column=3, padx=10, pady=5)
 
     def _try_run_simulation_with_single_plot(self):
         err_msg_list = self._validate_entry_data()

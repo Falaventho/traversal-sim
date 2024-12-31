@@ -5,7 +5,7 @@ import statistics
 import matplotlib.pyplot as plt
 import numpy as np
 
-
+from concurrent.futures import ThreadPoolExecutor
 from typing import List, Tuple, Dict
 
 
@@ -104,6 +104,14 @@ class Gatherer:
         min_dist = min(dists)
         min_perm = permutations[dists.index(min_dist)]
         return min_dist, min_perm
+
+    @staticmethod
+    def gather_parallel(starting_point: Point, num_points: int, iterations: int) -> List[Tuple[float, Tuple[Point, ...]]]:
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(
+                Gatherer.gather, starting_point, num_points) for _ in range(iterations)]
+            results = [future.result() for future in futures]
+        return results
 
 
 class MainApp:
